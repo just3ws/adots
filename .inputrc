@@ -1,0 +1,34 @@
+# .inputrc - Readline configuration
+# Hybrid Emacs/Vim command-line awareness
+
+# Case-insensitive completion
+set completion-ignore-case on
+# Show all matches on first tab
+set show-all-if-ambiguous on
+# Append slash to symlinks to directories
+set mark-symlinked-directories on
+# Colorize completion matches
+set colored-stats on
+set colored-completion-prefix on
+
+# Use Vi mode for editing
+set editing-mode vi
+set keymap vi
+
+# Allow Emacs bindings even in Vi mode (The best of both worlds)
+$if mode=vi
+    # Switch to insert mode
+    set show-mode-in-prompt on
+    set vi-ins-mode-string \1\e[6 q\2
+    set vi-cmd-mode-string \1\e[2 q\2
+$endif
+
+# Global bindings (Emacs-like)
+"\C-a": beginning-of-line
+"\C-e": end-of-line
+"\C-f": forward-char
+"\C-b": backward-char
+"\C-k": kill-line
+"\C-u": unix-line-discard
+"\C-w": unix-word-rubout
+"\C-y": yank
