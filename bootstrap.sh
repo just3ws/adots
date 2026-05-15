@@ -35,5 +35,10 @@ fi
 # 5. Hide untracked files
 homegit config --local status.showUntrackedFiles no
 
+# 6. Verify Modular Trinity
+echo "Checking sister repositories..."
+[ -d "$HOME/.config/zsh" ] || echo "⚠️  Warning: zdots (~/.config/zsh) not found."
+[ -d "$HOME/my" ] || echo "⚠️  Warning: my (~/my) not found."
+
 banner "✅ adots bootstrap complete!
 Environment Deepened."
