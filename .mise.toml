@@ -1,0 +1,8 @@
+[hooks.postinstall]
+shell = "bash"
+script = """
+if [ "$MISE_TOOL" = "ruby" ]; then
+  echo "Installing Neovim Ruby tools for Ruby $MISE_TOOL_VERSION..."
+  gem install ruby-lsp standardrb rubocop
+fi
+"""
