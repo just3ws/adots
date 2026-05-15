@@ -1,0 +1,20 @@
+# .ripgreprc - High-signal searching
+# Smart case searching
+--smart-case
+
+# Follow symlinks
+--follow
+
+# Hidden files (standard in ack/ag, not rg)
+--hidden
+
+# Ignore specific dirs
+--glob=!.git/*
+--glob=!node_modules/*
+--glob=!target/*
+--glob=!.next/*
+--glob=!.cache/*
+
+# Custom types (matching .ackrc)
+--type-add
+mermaid:*.mmd,*.mermaid
