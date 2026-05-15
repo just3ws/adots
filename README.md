@@ -6,7 +6,8 @@ The alpha layer for home directory configurations.
 
 1.  **adots (~)**: This repository. Tracks root configs (`.zshenv`, `.gitconfig`, `.ackrc`) and bootstrap logic.
 2.  **zdots (~/.config/zsh)**: The "Deepened Shell Platform." Handles shell logic, OTel observability, and MCP integrations.
-3.  **my (~/my)**: The "Cerebral Control Plane." A monorepo for local-first AI context, standards, and the "Shell Brain" (PostgreSQL context).
+3.  **gdots (~/.config/git)**: Global Git configuration, delta styling, and system-wide ignore rules.
+4.  **my (~/my)**: The "Cerebral Control Plane." A monorepo for local-first AI context, standards, and the "Shell Brain" (PostgreSQL context).
 
 ## Bootstrap
 Run `./bootstrap.sh` to ensure all system dependencies (Homebrew, Brewfile) are installed and the environment is ready for the modular components.
