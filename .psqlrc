@@ -1,0 +1,24 @@
+# .psqlrc - High-signal database interaction
+
+# 0. UI & Aesthetics (Dracula Pro compatible)
+\set QUIET 1
+\pset border 2
+\pset linestyle unicode
+\pset unicode_border_linestyle single
+\pset unicode_column_linestyle single
+\pset unicode_header_linestyle double
+\pset null '∅'
+
+# 1. Behavior
+\set ON_ERROR_ROLLBACK interactive
+\set COMP_KEYWORD_CASE upper
+\timing on
+
+# 2. Prompt (Van Helsing / Dracula Pro)
+# [user@host:db] [txn_status] >
+\set PROMPT1 '%[%033[38;5;141m%]%n%[%033[0m%]@%[%033[38;5;117m%]%m%[%033[0m%]:%[%033[38;5;81m%]%/ %[%033[38;5;210m%]%x%[%033[0m%]%# '
+\set PROMPT2 '  %R > '
+
+# 3. Development shortcuts
+\unset QUIET
+\echo 'PostgreSQL initialized. [Dracula Pro Skin]'
