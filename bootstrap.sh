@@ -3,7 +3,13 @@
 
 set -e
 
-echo "🚀 Starting adots bootstrap..."
+# Utility: ASCII Banner
+banner() {
+    echo "$1" | boxes -d stone -p a2
+}
+
+banner "🚀 adots bootstrap
+The Alpha Layer"
 
 # 1. Install Homebrew if missing
 if ! command -v brew &> /dev/null; then
@@ -17,11 +23,11 @@ if [ -f "$HOME/.config/zsh/Brewfile" ]; then
     brew bundle --file="$HOME/.config/zsh/Brewfile"
 fi
 
-# 3. Ensure Pi is installed (via recommended script)
+# 3. Ensure Pi is installed
 echo "Ensuring Pi coding agent is installed..."
 curl -fsSL https://pi.dev/install.sh | sh
 
-# 4. Setup homegit alias if not in current shell
+# 4. Setup homegit alias
 if ! command -v homegit &> /dev/null; then
     alias homegit='/usr/bin/git --git-dir=$HOME/.homegit/ --work-tree=$HOME'
 fi
@@ -29,4 +35,5 @@ fi
 # 5. Hide untracked files
 homegit config --local status.showUntrackedFiles no
 
-echo "✅ adots bootstrap complete!"
+banner "✅ adots bootstrap complete!
+Environment Deepened."
