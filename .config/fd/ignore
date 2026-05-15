@@ -1,0 +1,13 @@
+.git/
+.hg/
+.svn/
+node_modules/
+target/
+dist/
+build/
+.cache/
+.npm/
+.next/
+.turbo/
+*.log
+.DS_Store
