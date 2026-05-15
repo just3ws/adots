@@ -1,0 +1,43 @@
+# .ackrc - High-Signal Search Defaults
+
+# Ignore noise
+--ignore-dir=.git
+--ignore-dir=.github
+--ignore-dir=.hg
+--ignore-dir=.svn
+--ignore-dir=node_modules
+--ignore-dir=dist
+--ignore-dir=build
+--ignore-dir=target
+--ignore-dir=vendor
+--ignore-dir=.next
+--ignore-dir=.turbo
+--ignore-dir=.cache
+--ignore-dir=tmp
+--ignore-dir=log
+--ignore-dir=logs
+
+# Always ignore binary files
+--binary
+
+# Smart case searching
+--smart-case
+
+# Follow symlinks
+--follow
+
+# Custom Types
+--type-set=typescript=.ts,.tsx
+--type-set=markdown=.md,.markdown,.mdx
+--type-set=css=.css,.scss,.sass,.less
+--type-set=json=.json,.jsonl,.lock
+--type-set=yaml=.yaml,.yml
+--type-set=rust=.rs
+
+# Visual preferences
+--color
+--color-match=bold yellow
+--color-filename=bold green
+--color-lineno=bold white
+--heading
+--break
