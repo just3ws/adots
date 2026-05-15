@@ -1,0 +1,6 @@
+# bat configuration
+--theme="Dracula-pro"
+--italic-text=always
+--style="numbers,changes,header"
+--map-syntax "*.jenkinsfile:Groovy"
+--map-syntax "*.props:Java Properties"
