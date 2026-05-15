@@ -1,0 +1,31 @@
+gui:
+  theme:
+    activeBorderColor:
+      - "#bd93f9" # Purple
+      - bold
+    inactiveBorderColor:
+      - "#6272a4" # Comment
+    optionsTextColor:
+      - "#8be9fd" # Cyan
+    selectedLineBgColor:
+      - "#44475a" # Selection
+    selectedRangeBgColor:
+      - "#44475a" # Selection
+    cherryPickedCommitBgColor:
+      - "#50fa7b" # Green
+    cherryPickedCommitFgColor:
+      - "#bd93f9" # Purple
+    unstagedChangesColor:
+      - "#ff5555" # Red
+    defaultFgColor:
+      - "#f8f8f2" # Foreground
+git:
+  paging:
+    colorArg: always
+    pager: delta --dark --paging=never
+keybinding:
+  universal:
+    prevItem: 'k'
+    nextItem: 'j'
+    prevBlock: 'h'
+    nextBlock: 'l'
