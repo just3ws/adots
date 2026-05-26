@@ -1,0 +1,41 @@
+[user]
+	name = Mike Hall
+	email = mike@just3ws.com
+
+[core]
+	editor = nvim
+	excludesfile = ~/.gitignore_global
+	autocrlf = input
+	pager = delta
+
+[pull]
+	rebase = true
+
+[push]
+	default = current
+	autoSetupRemote = true
+
+[rebase]
+	autosquash = true
+	autostash = true
+
+[merge]
+	conflictstyle = zdiff3
+
+[delta]
+	navigate = true
+	light = false
+	line-numbers = true
+	side-by-side = true
+
+[interactive]
+	diffFilter = delta --color-only
+
+[init]
+	defaultBranch = main
+
+[fetch]
+	prune = true
+
+[diff]
+	colorMoved = default
