@@ -1,13 +1,5 @@
 ---
-:backtrace: false
-:benchmark: false
-:bulk_threshold: 1000
+:backtrace: true
+:verbose: true
 :concurrent_downloads: 8
-:sources:
-  - https://rubygems.org/
-:update_sources: true
-:verbose: false
-gem: --no-document
-install: --no-document
-search: --both
-update: --no-document
+gem: "--no-document --color"
