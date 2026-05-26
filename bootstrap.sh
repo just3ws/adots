@@ -35,11 +35,20 @@ fi
 # 5. Hide untracked files
 homegit config --local status.showUntrackedFiles no
 
-# 6. Verify Modular Ecosystem
+# 6. Verify and clone Modular Ecosystem
 echo "Checking sister repositories..."
-[ -d "$HOME/.config/zsh" ] || echo "⚠️  Warning: zdots (~/.config/zsh) not found."
-[ -d "$HOME/.config/git" ] || echo "⚠️  Warning: gdots (~/.config/git) not found."
-[ -d "$HOME/my" ] || echo "⚠️  Warning: my (~/my) not found."
+[ -d "$HOME/.config/zsh" ] || echo "⚠️  Warning: zdots (~/.config/zsh) not found. Run: git clone https://github.com/just3ws/zdots.git ~/.config/zsh"
+[ -d "$HOME/.config/git/.git" ] || {
+    echo "Cloning gdots (~/.config/git)..."
+    git clone https://github.com/just3ws/gdots.git "$HOME/.config/git" \
+        || echo "⚠️  Warning: gdots clone failed. Run: git clone https://github.com/just3ws/gdots.git ~/.config/git"
+}
+[ -d "$HOME/.config/nvim" ] || {
+    echo "Cloning vdots (~/.config/nvim)..."
+    git clone https://github.com/just3ws/vdots.git "$HOME/.config/nvim" \
+        || echo "⚠️  Warning: vdots clone failed. Run: git clone https://github.com/just3ws/vdots.git ~/.config/nvim"
+}
+[ -d "$HOME/my" ] || echo "⚠️  Warning: my (~/my) not found. Restore from backup — local-only repo, no remote."
 
 banner "✅ adots bootstrap complete!
 Environment Deepened."
