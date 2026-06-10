@@ -275,6 +275,7 @@ info "checking closed-system dependencies"
 ensure_directory ".config/zsh"
 ensure_directory ".config/nvim"
 ensure_xdg_root_pair "colima"
+ensure_xdg_root_pair "docker"
 
 if [[ -x "$ZDOTDIR/bin/bootstrap" ]]; then
   info "ok: zdots bootstrap present"
@@ -335,6 +336,7 @@ ensure_git_identity
 
 info "checking XDG redirects"
 # Configs: legacy presence shadows the new path if the env var is missing.
+ensure_zdots_export "DOCKER_CONFIG"
 ensure_no_legacy_file ".inputrc"
 ensure_zdots_export "INPUTRC"
 ensure_no_legacy_file ".irbrc"
