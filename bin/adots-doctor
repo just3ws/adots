@@ -305,6 +305,7 @@ for rel in \
   .config/btop/btop.conf \
   .config/fd/ignore \
   .config/gh-dash/config.yml \
+  .config/go/env \
   .config/git/config \
   .config/git/config.identity.home \
   .config/irb/irbrc \
@@ -337,6 +338,7 @@ ensure_git_identity
 info "checking XDG redirects"
 # Configs: legacy presence shadows the new path if the env var is missing.
 ensure_zdots_export "DOCKER_CONFIG"
+ensure_zdots_export "GOENV"
 ensure_no_legacy_file ".inputrc"
 ensure_zdots_export "INPUTRC"
 ensure_no_legacy_file ".irbrc"
@@ -353,7 +355,7 @@ ensure_zdots_export "SQLITE_HISTORY"
 
 info "checking mise ownership"
 if command -v mise >/dev/null 2>&1; then
-  if mise config 2>/dev/null | grep -q '^\~/.config/mise/config.toml[[:space:]]\+ruby$'; then
+  if mise config 2>/dev/null | grep -qE '^\~/.config/mise/config\.toml[[:space:]].*\bruby\b'; then
     info "ok: Ruby comes from ~/.config/mise/config.toml"
   else
     fail "Ruby is not resolved from ~/.config/mise/config.toml"

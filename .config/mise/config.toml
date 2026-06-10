@@ -4,6 +4,7 @@
 # Keep concrete versions here. Do not use "latest" in adots; zdots can bump
 # pins intentionally and keep its repo config, ruby-version file, and this
 # home-level config in lockstep.
+go = "1.26.4"
 ruby = { version = "4.0.5", postinstall = "bash -lc 'if [ -x \"$HOME/.config/zsh/bin/zdots-ruby-default-gems\" ]; then \"$HOME/.config/zsh/bin/zdots-ruby-default-gems\" \"$MISE_TOOL_VERSION\"; fi'" }
 
 [settings]
