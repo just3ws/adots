@@ -1,0 +1,366 @@
+#!/usr/bin/env bash
+# adots-doctor — enforce the home blanket layout without mutating by default.
+#
+# Use `--fix` to repair safe drift:
+# - restore missing tracked files from adots
+# - replace known symlinked entrypoints with the zdots targets
+# - append the adots include to ~/.gitconfig when missing
+# - normalize selected XDG tool roots to keep one canonical home for config
+#
+# If the required zdots paths are unavailable, the doctor fails rather than
+# guessing a fallback.
+
+set -euo pipefail
+trap '' PIPE
+
+HOME_GIT_DIR="${HOME}/.homegit"
+ZDOTDIR="${ZDOTDIR:-$HOME/.config/zsh}"
+BACKUP_ROOT="${HOME}/.adots-backups/$(date +%Y%m%d-%H%M%S)"
+FIX=0
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --fix) FIX=1 ;;
+    -h|--help)
+      sed -n '2,18p' "$0" | sed 's/^# \?//'
+      exit 0
+      ;;
+    *) printf 'adots-doctor: unknown option: %s\n' "$1" >&2; exit 1 ;;
+  esac
+  shift
+done
+
+failures=0
+warnings=0
+
+info() { printf 'adots-doctor: %s\n' "$*"; }
+warn() { warnings=$((warnings + 1)); printf 'adots-doctor: WARN %s\n' "$*" >&2; }
+fail() { failures=$((failures + 1)); printf 'adots-doctor: FAIL %s\n' "$*" >&2; }
+note_fix() { [[ "$FIX" -eq 1 ]] && info "fix: $*"; }
+
+repo_git() {
+  git --git-dir="$HOME_GIT_DIR" --work-tree="$HOME" "$@"
+}
+
+backup_path() {
+  local rel="$1"
+  local path="$HOME/$rel"
+  local dest="$BACKUP_ROOT/$rel"
+  mkdir -p "$(dirname "$dest")"
+  mv "$path" "$dest"
+  note_fix "backed up $rel to $dest"
+}
+
+restore_tracked_file() {
+  local rel="$1"
+  local path="$HOME/$rel"
+
+  if [[ "$FIX" -ne 1 ]]; then
+    fail "$rel missing or incorrect"
+    return 1
+  fi
+
+  if [[ -e "$path" || -L "$path" ]]; then
+    backup_path "$rel"
+  fi
+
+  repo_git restore --source=HEAD -- "$rel"
+  info "restored $rel from adots"
+}
+
+ensure_directory() {
+  local rel="$1"
+  local path="$HOME/$rel"
+  if [[ -d "$path" ]]; then
+    info "ok: $rel directory exists"
+  else
+    fail "$rel directory missing"
+  fi
+}
+
+ensure_xdg_root_pair() {
+  local name="$1"
+  local canonical_rel=".config/$name"
+  local legacy_rel=".$name"
+  local canonical="$HOME/$canonical_rel"
+  local legacy="$HOME/$legacy_rel"
+
+  if [[ -L "$canonical" ]]; then
+    local canonical_target
+    canonical_target="$(readlink "$canonical")"
+    if [[ "$canonical_target" == "$legacy" ]]; then
+      if [[ "$FIX" -ne 1 ]]; then
+        fail "$canonical_rel points at the legacy root $legacy_rel"
+        return 1
+      fi
+
+      backup_path "$canonical_rel"
+      if [[ -d "$legacy" && ! -L "$legacy" ]]; then
+        mv "$legacy" "$canonical"
+      else
+        mkdir -p "$canonical"
+      fi
+      info "migrated $legacy_rel -> $canonical_rel"
+      return 0
+    fi
+  fi
+
+  if [[ -d "$canonical" && ! -L "$canonical" ]]; then
+    if [[ -e "$legacy" || -L "$legacy" ]]; then
+      if [[ "$FIX" -ne 1 ]]; then
+        fail "$legacy_rel should not coexist with canonical XDG root $canonical_rel"
+        return 1
+      fi
+      backup_path "$legacy_rel"
+      info "removed legacy root $legacy_rel in favor of $canonical_rel"
+    else
+      info "ok: $name uses XDG canonical root $canonical_rel"
+    fi
+    return 0
+  fi
+
+  if [[ -d "$legacy" && ! -L "$legacy" ]]; then
+    if [[ "$FIX" -ne 1 ]]; then
+      fail "$legacy_rel exists as a legacy root; migrate it to $canonical_rel"
+      return 1
+    fi
+
+    if [[ -e "$canonical" || -L "$canonical" ]]; then
+      backup_path "$canonical_rel"
+    fi
+
+    mkdir -p "$(dirname "$canonical")"
+    mv "$legacy" "$canonical"
+    info "migrated $legacy_rel -> $canonical_rel"
+    return 0
+  fi
+
+  if [[ ! -e "$canonical" && ! -L "$canonical" && ! -e "$legacy" && ! -L "$legacy" ]]; then
+    if command -v "$name" >/dev/null 2>&1; then
+      fail "$name has no canonical XDG root at $canonical_rel"
+      return 1
+    fi
+    info "skip: $name not installed and no XDG root present"
+    return 0
+  fi
+
+  fail "$name XDG root is missing or ambiguous"
+}
+
+ensure_symlink() {
+  local rel="$1"
+  local target="$2"
+  local path="$HOME/$rel"
+
+  if [[ ! -e "$target" && ! -L "$target" ]]; then
+    fail "$rel target missing: $target"
+    return 1
+  fi
+
+  if [[ -L "$path" ]]; then
+    local actual
+    actual="$(readlink "$path")"
+    if [[ "$actual" == "$target" ]]; then
+      info "ok: $rel -> $target"
+      return 0
+    fi
+  fi
+
+  if [[ -e "$path" || -L "$path" ]]; then
+    if [[ "$FIX" -ne 1 ]]; then
+      fail "$rel is not the expected symlink"
+      return 1
+    fi
+    backup_path "$rel"
+  elif [[ "$FIX" -ne 1 ]]; then
+    fail "$rel symlink missing"
+    return 1
+  fi
+
+  ln -s "$target" "$path"
+  info "linked $rel -> $target"
+}
+
+ensure_tracked_file() {
+  local rel="$1"
+  local path="$HOME/$rel"
+
+  if [[ -f "$path" && ! -L "$path" ]]; then
+    info "ok: $rel file exists"
+    return 0
+  fi
+
+  restore_tracked_file "$rel"
+}
+
+ensure_gitconfig_include() {
+  local path="$HOME/.gitconfig"
+  local include_line='  path = ~/.config/git/config'
+
+  if [[ ! -f "$path" ]]; then
+    restore_tracked_file ".gitconfig"
+    return 0
+  fi
+
+  if grep -Fq "$include_line" "$path"; then
+    info "ok: .gitconfig includes ~/.config/git/config"
+    return 0
+  fi
+
+  if [[ "$FIX" -ne 1 ]]; then
+    fail ".gitconfig missing include for ~/.config/git/config"
+    return 1
+  fi
+
+  printf '\n[include]\n%s\n' "$include_line" >> "$path"
+  info "updated .gitconfig include"
+}
+
+ensure_no_wildcard_safe_directory() {
+  local path="$HOME/.gitconfig"
+  if [[ -f "$path" ]] && git config --file "$path" --get-all safe.directory 2>/dev/null | grep -qxF '*'; then
+    fail ".gitconfig contains safe.directory=*"
+    return 1
+  fi
+  info "ok: .gitconfig does not wildcard safe.directory"
+}
+
+ensure_git_identity() {
+  local path="$HOME/.config/git/config.identity"
+  if [[ -f "$path" ]]; then
+    info "ok: machine-local git identity present"
+    return 0
+  fi
+  fail "missing $path — on home: cp $HOME/.config/git/config.identity.home $path; on work: populate config.identity.work, then cp"
+  return 1
+}
+
+ensure_no_legacy_file() {
+  local rel="$1"
+  local path="$HOME/$rel"
+  if [[ ! -e "$path" && ! -L "$path" ]]; then
+    info "ok: no legacy $rel"
+    return 0
+  fi
+  if [[ "$FIX" -ne 1 ]]; then
+    fail "legacy file present: $rel"
+    return 1
+  fi
+  backup_path "$rel"
+  info "removed legacy $rel"
+}
+
+ensure_zdots_export() {
+  local var="$1"
+  local file="${ZDOTDIR}/env.sh"
+  if [[ ! -f "$file" ]]; then
+    fail "zdots env file missing: $file"
+    return 1
+  fi
+  if grep -qE "^export ${var}=" "$file"; then
+    info "ok: zdots exports $var"
+    return 0
+  fi
+  fail "zdots does not export $var in $file"
+}
+
+info "checking adots bare repo"
+if repo_git rev-parse --is-bare-repository >/dev/null 2>&1; then
+  info "ok: ~/.homegit is a bare repo"
+else
+  fail "~/.homegit is not a usable bare repo"
+fi
+
+info "checking closed-system dependencies"
+ensure_directory ".config/zsh"
+ensure_directory ".config/nvim"
+ensure_xdg_root_pair "colima"
+
+if [[ -x "$ZDOTDIR/bin/bootstrap" ]]; then
+  info "ok: zdots bootstrap present"
+else
+  fail "zdots bootstrap missing at $ZDOTDIR/bin/bootstrap"
+fi
+
+info "checking command dependencies"
+for cmd in git mise nvim rg psql; do
+  if command -v "$cmd" >/dev/null 2>&1; then
+    info "ok: command available: $cmd"
+  else
+    warn "command missing: $cmd"
+  fi
+done
+
+info "checking entrypoint layout"
+ensure_symlink ".bash_profile" "$ZDOTDIR/bash_profile"
+ensure_symlink ".bashrc" "$ZDOTDIR/bashrc"
+ensure_symlink ".zshenv" "$ZDOTDIR/.zshenv"
+
+info "checking tracked adots files"
+for rel in \
+  .ackrc \
+  .config/atuin/config.toml \
+  .config/bat/config \
+  .config/btop/btop.conf \
+  .config/fd/ignore \
+  .config/gh-dash/config.yml \
+  .config/git/config \
+  .config/git/config.identity.home \
+  .config/irb/irbrc \
+  .config/lazygit/config.yml \
+  .config/mise/config.toml \
+  .curlrc \
+  .editorconfig \
+  .gemrc \
+  .gitignore_global \
+  .config/readline/inputrc \
+  .hushlogin \
+  .ideavimrc \
+  .mise.toml \
+  .config/psql/psqlrc \
+  .profile \
+  .ripgreprc \
+  .tmux.conf \
+  .yarnrc \
+  README.md \
+  bootstrap.sh \
+  bin/adots-doctor
+do
+  ensure_tracked_file "$rel"
+done
+
+ensure_gitconfig_include
+ensure_no_wildcard_safe_directory
+ensure_git_identity
+
+info "checking XDG redirects"
+# Configs: legacy presence shadows the new path if the env var is missing.
+ensure_no_legacy_file ".inputrc"
+ensure_zdots_export "INPUTRC"
+ensure_no_legacy_file ".irbrc"
+ensure_zdots_export "IRBRC"
+ensure_no_legacy_file ".psqlrc"
+ensure_zdots_export "PSQLRC"
+# REPL/history redirects: env var is load-bearing; legacy files are
+# stale-not-broken and not policed here.
+ensure_zdots_export "LESSHISTFILE"
+ensure_zdots_export "MYSQL_HISTFILE"
+ensure_zdots_export "NODE_REPL_HISTORY"
+ensure_zdots_export "PSQL_HISTORY"
+ensure_zdots_export "SQLITE_HISTORY"
+
+info "checking mise ownership"
+if command -v mise >/dev/null 2>&1; then
+  if mise config 2>/dev/null | grep -q '^\~/.config/mise/config.toml[[:space:]]\+ruby$'; then
+    info "ok: Ruby comes from ~/.config/mise/config.toml"
+  else
+    fail "Ruby is not resolved from ~/.config/mise/config.toml"
+  fi
+fi
+
+if [[ "$failures" -gt 0 ]]; then
+  printf 'adots-doctor: %d failure(s), %d warning(s)\n' "$failures" "$warnings" >&2
+  exit 1
+fi
+
+printf 'adots-doctor: ok with %d warning(s)\n' "$warnings"
