@@ -1,5 +1,2 @@
-[safe]
-	directory = *
-
 [include]
   path = ~/.config/git/config

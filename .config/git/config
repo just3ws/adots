@@ -1,6 +1,19 @@
-[user]
-	name = Mike Hall
-	email = mike@just3ws.com
+# Machine default identity. This file is created per machine and is not tracked.
+#   home box:  cp config.identity.home config.identity
+#   work box:  populate config.identity.work, then cp it to config.identity
+[include]
+	path = ~/.config/git/config.identity
+
+# Cross-context overrides via SSH host aliases (home.* / work.*). A repo cloned
+# through the "other" context's alias still commits as the right identity.
+[includeIf "hasconfig:remote.*.url:git@home.github.com:*"]
+	path = ~/.config/git/config.identity.home
+[includeIf "hasconfig:remote.*.url:git@home.gitlab.com:*"]
+	path = ~/.config/git/config.identity.home
+[includeIf "hasconfig:remote.*.url:git@work.github.com:*"]
+	path = ~/.config/git/config.identity.work
+[includeIf "hasconfig:remote.*.url:git@work.gitlab.com:*"]
+	path = ~/.config/git/config.identity.work
 
 [core]
 	editor = nvim
@@ -39,3 +52,5 @@
 
 [diff]
 	colorMoved = default
+[safe]
+	directory = /app

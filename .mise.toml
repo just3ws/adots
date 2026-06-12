@@ -1,8 +1,9 @@
-[hooks.postinstall]
-shell = "bash"
-script = """
-if [ "$MISE_TOOL" = "ruby" ]; then
-  echo "Installing Neovim Ruby tools for Ruby $MISE_TOOL_VERSION..."
-  gem install ruby-lsp standardrb rubocop
-fi
-"""
+# adots guard file.
+#
+# Keep this file free of [tools] pins. The canonical user-level mise config is:
+#
+#   ~/.config/mise/config.toml
+#
+# zdots owns shell activation, Homebrew installation, and repo-local runtime
+# pins in ~/.config/zsh/mise.toml. adots owns the user-level mise policy that
+# makes those runtimes useful from a restored home directory.

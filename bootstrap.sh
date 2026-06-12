@@ -1,54 +1,50 @@
-#!/bin/bash
-# adots bootstrap - The alpha layer setup script
+#!/usr/bin/env bash
+# adots bootstrap — safe home blanket check.
+#
+# adots does not install the platform. zdots is the closed system that owns
+# Homebrew, runtime installs, services, and bootstrap side effects.
 
-set -e
+set -euo pipefail
 
-# Utility: ASCII Banner
-banner() {
-    echo "$1" | boxes -d stone -p a2
+homegit() {
+  git --git-dir="$HOME/.homegit" --work-tree="$HOME" "$@"
 }
 
-banner "🚀 adots bootstrap
-The Alpha Layer"
+echo "adots bootstrap: checking home blanket"
 
-# 1. Install Homebrew if missing
-if ! command -v brew &> /dev/null; then
-    echo "Installing Homebrew..."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+if [[ ! -d "$HOME/.homegit" ]]; then
+  echo "adots bootstrap: ~/.homegit missing"
+  echo "  install adots with:"
+  echo "  git clone --bare https://github.com/just3ws/adots.git ~/.homegit"
+  exit 1
 fi
 
-# 2. Bundle from Brewfile
-if [ -f "$HOME/.config/zsh/Brewfile" ]; then
-    echo "Installing packages from Brewfile..."
-    brew bundle --file="$HOME/.config/zsh/Brewfile"
-fi
-
-# 3. Ensure Pi is installed
-echo "Ensuring Pi coding agent is installed..."
-curl -fsSL https://pi.dev/install.sh | sh
-
-# 4. Setup homegit alias
-if ! command -v homegit &> /dev/null; then
-    alias homegit='/usr/bin/git --git-dir=$HOME/.homegit/ --work-tree=$HOME'
-fi
-
-# 5. Hide untracked files
 homegit config --local status.showUntrackedFiles no
+echo "adots bootstrap: ~/.homegit present"
 
-# 6. Verify and clone Modular Ecosystem
-echo "Checking sister repositories..."
-[ -d "$HOME/.config/zsh" ] || echo "⚠️  Warning: zdots (~/.config/zsh) not found. Run: git clone https://github.com/just3ws/zdots.git ~/.config/zsh"
-[ -d "$HOME/.config/git/.git" ] || {
-    echo "Cloning gdots (~/.config/git)..."
-    git clone https://github.com/just3ws/gdots.git "$HOME/.config/git" \
-        || echo "⚠️  Warning: gdots clone failed. Run: git clone https://github.com/just3ws/gdots.git ~/.config/git"
-}
-[ -d "$HOME/.config/nvim" ] || {
-    echo "Cloning vdots (~/.config/nvim)..."
-    git clone https://github.com/just3ws/vdots.git "$HOME/.config/nvim" \
-        || echo "⚠️  Warning: vdots clone failed. Run: git clone https://github.com/just3ws/vdots.git ~/.config/nvim"
-}
-[ -d "$HOME/my" ] || echo "⚠️  Warning: my (~/my) not found. Restore from backup — local-only repo, no remote."
+if [[ ! -d "$HOME/.config/zsh" ]]; then
+  echo "adots bootstrap: zdots missing at ~/.config/zsh"
+  echo "  clone it, then let zdots own platform bootstrap:"
+  echo "  git clone https://github.com/just3ws/zdots.git ~/.config/zsh"
+  echo "  ~/.config/zsh/bin/bootstrap"
+else
+  echo "adots bootstrap: zdots present"
+fi
 
-banner "✅ adots bootstrap complete!
-Environment Deepened."
+if [[ ! -d "$HOME/.config/nvim" ]]; then
+  echo "adots bootstrap: vdots missing at ~/.config/nvim"
+  echo "  clone it when editor setup is needed:"
+  echo "  git clone https://github.com/just3ws/vdots.git ~/.config/nvim"
+else
+  echo "adots bootstrap: vdots present"
+fi
+
+if [[ -x "$HOME/bin/adots-doctor" ]]; then
+  if [[ "${1:-}" == "--fix" ]]; then
+    "$HOME/bin/adots-doctor" --fix
+  else
+    "$HOME/bin/adots-doctor"
+  fi
+else
+  echo "adots bootstrap: adots-doctor missing; restore adots tracked files"
+fi

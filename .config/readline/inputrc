@@ -1,34 +1,71 @@
-# .inputrc - Readline configuration
-# Hybrid Emacs/Vim command-line awareness
+# .inputrc — readline policy for the shell kernel and every REPL it reaches
+# (bash, psql, irb, sqlite3, node, python, gdb, ...).
+#
+# Editing model: vi is primary. Emacs line-movement bindings remain as
+# fallbacks in both insert and command keymaps so muscle memory survives
+# regardless of which mode is active. Completion coloring is enabled here;
+# the palette comes from $LS_COLORS in the shell environment.
 
-# Case-insensitive completion
+# ── Completion ────────────────────────────────────────────────────────────
 set completion-ignore-case on
-# Show all matches on first tab
 set show-all-if-ambiguous on
-# Append slash to symlinks to directories
+set show-all-if-unmodified on
+set skip-completed-text on
+set menu-complete-display-prefix on
 set mark-symlinked-directories on
-# Colorize completion matches
+set visible-stats on
 set colored-stats on
 set colored-completion-prefix on
+set page-completions off
 
-# Use Vi mode for editing
+# ── Input ─────────────────────────────────────────────────────────────────
+set enable-bracketed-paste on
+set bell-style none
+set blink-matching-paren on
+
+# ── Editing model ─────────────────────────────────────────────────────────
 set editing-mode vi
-set keymap vi
 
-# Allow Emacs bindings even in Vi mode (The best of both worlds)
 $if mode=vi
-    # Switch to insert mode
     set show-mode-in-prompt on
+    # Cursor shape only — no mode text — so a custom prompt stays uncluttered.
+    # Insert: beam. Command: block.
     set vi-ins-mode-string \1\e[6 q\2
     set vi-cmd-mode-string \1\e[2 q\2
 $endif
 
-# Global bindings (Emacs-like)
+# Emacs-style line movements in vi insert mode (primary fallback site).
+set keymap vi-insert
 "\C-a": beginning-of-line
 "\C-e": end-of-line
-"\C-f": forward-char
 "\C-b": backward-char
+"\C-f": forward-char
+"\C-p": previous-history
+"\C-n": next-history
 "\C-k": kill-line
 "\C-u": unix-line-discard
 "\C-w": unix-word-rubout
 "\C-y": yank
+"\C-d": delete-char
+"\C-l": clear-screen
+"\C-r": reverse-search-history
+"\C-s": forward-search-history
+
+# Same bindings in vi command mode for muscle-memory parity.
+set keymap vi-command
+"\C-a": beginning-of-line
+"\C-e": end-of-line
+"\C-b": backward-char
+"\C-f": forward-char
+"\C-p": previous-history
+"\C-n": next-history
+"\C-k": kill-line
+"\C-u": unix-line-discard
+"\C-w": unix-word-rubout
+"\C-y": yank
+"\C-l": clear-screen
+"\C-r": reverse-search-history
+
+# Reset keymap so any later $if blocks for specific tools don't inherit
+# vi-command as their target.
+set keymap vi
