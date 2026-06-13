@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+# adots-profile — manage the active adots machine profile.
+#
+# A profile is a machine identity (home, work, powerstation) stored as a single
+# line in ~/.config/adots/profile. It records which machine this is so adots and
+# zdots can branch behavior (Git identity, tool defaults, PHI posture).
+#
+# Commands:
+#   adots-profile            print the active profile
+#   adots-profile <name>     switch to profile <name>
+#   adots-profile list       list known profiles (* = active)
+#   adots-profile validate   check the active profile is set and known
+set -euo pipefail
+
+ADOTS_CONFIG_DIR="${ADOTS_CONFIG_DIR:-$HOME/.config/adots}"
+ADOTS_PROFILE_FILE="${ADOTS_PROFILE_FILE:-$ADOTS_CONFIG_DIR/profile}"
+KNOWN_PROFILES=(home work powerstation)
+
+info() { printf 'adots-profile: %s\n' "$*"; }
+fail() { printf 'adots-profile: FAIL %s\n' "$*" >&2; exit 1; }
+
+active_profile() {
+  [[ -f "$ADOTS_PROFILE_FILE" ]] && head -n1 "$ADOTS_PROFILE_FILE" | tr -d '[:space:]'
+}
+
+is_known() {
+  local p="$1" k
+  for k in "${KNOWN_PROFILES[@]}"; do [[ "$k" == "$p" ]] && return 0; done
+  return 1
+}
+
+case "${1:-get}" in
+  list)
+    active="$(active_profile || true)"
+    for p in "${KNOWN_PROFILES[@]}"; do
+      if [[ "$p" == "$active" ]]; then printf '* %s\n' "$p"; else printf '  %s\n' "$p"; fi
+    done
+    ;;
+  validate)
+    active="$(active_profile || true)"
+    [[ -n "$active" ]] || fail "no active profile set ($ADOTS_PROFILE_FILE missing or empty)"
+    is_known "$active" || fail "active profile '$active' is not known (${KNOWN_PROFILES[*]})"
+    if [[ -n "${ZDOTS_CONTEXT:-}" && "$active" != "$ZDOTS_CONTEXT" && "$active" != "powerstation" ]]; then
+      printf 'adots-profile: WARN active profile (%s) differs from ZDOTS_CONTEXT (%s)\n' \
+        "$active" "$ZDOTS_CONTEXT" >&2
+    fi
+    info "profile OK: $active"
+    ;;
+  -h|--help)
+    sed -n '2,16p' "$0" | sed 's/^# \?//'
+    ;;
+  get|"")
+    active="$(active_profile || true)"
+    [[ -n "$active" ]] || fail "no active profile set ($ADOTS_PROFILE_FILE missing or empty)"
+    printf '%s\n' "$active"
+    ;;
+  *)
+    name="$1"
+    is_known "$name" || fail "unknown profile '$name' (known: ${KNOWN_PROFILES[*]})"
+    mkdir -p "$ADOTS_CONFIG_DIR"
+    printf '%s\n' "$name" > "$ADOTS_PROFILE_FILE"
+    info "active profile set to: $name"
+    ;;
+esac

@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# adots-git — run git against the adots bare repo (home work-tree).
+#
+# adots tracks $HOME via a bare repo at ~/.homegit. This forwards all arguments
+# to git with that repo and work-tree wired in. Equivalent to the `homegit`
+# alias, but available to non-interactive callers (scripts, agents, the
+# capability attestation in cc-home) that do not load shell aliases.
+#
+# Examples:
+#   adots-git status
+#   adots-git diff
+#   adots-git log --oneline -10
+#   adots-git add .psqlrc
+#   adots-git commit -m "msg"
+#   adots-git push
+set -euo pipefail
+
+HOME_GIT_DIR="${ADOTS_REPO:-$HOME/.homegit}"
+
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+  sed -n '2,16p' "$0" | sed 's/^# \?//'
+  exit 0
+fi
+
+exec git --git-dir="$HOME_GIT_DIR" --work-tree="$HOME" "$@"

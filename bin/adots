@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+# adots — high-level home synchronization for the adots bare repo.
+#
+# adots manages $HOME via a bare git repo at ~/.homegit. This wraps the common
+# lifecycle operations with human-readable reporting. For raw git access use
+# `adots-git` (or the `homegit` alias).
+#
+# Commands:
+#   adots sync               pull from remote (fast-forward only), report HEAD
+#   adots sync --status      report behind/ahead vs upstream without pulling
+#   adots status             show modified tracked files (short form)
+#   adots status --verbose   full status plus a diff of modified files
+#   adots push               push committed changes to the remote
+set -euo pipefail
+
+HOME_GIT_DIR="${ADOTS_REPO:-$HOME/.homegit}"
+
+repo_git() { git --git-dir="$HOME_GIT_DIR" --work-tree="$HOME" "$@"; }
+info() { printf 'adots: %s\n' "$*"; }
+fail() { printf 'adots: FAIL %s\n' "$*" >&2; exit 1; }
+
+[[ -d "$HOME_GIT_DIR" ]] || fail "adots repo not found: $HOME_GIT_DIR"
+
+cmd="${1:-status}"; shift || true
+
+case "$cmd" in
+  sync)
+    if [[ "${1:-}" == "--status" ]]; then
+      repo_git fetch --quiet
+      local_ref="$(repo_git rev-parse @)"
+      remote_ref="$(repo_git rev-parse '@{u}' 2>/dev/null)" || fail "no upstream configured"
+      base_ref="$(repo_git merge-base @ '@{u}')"
+      if   [[ "$local_ref"  == "$remote_ref" ]]; then info "up to date with upstream"
+      elif [[ "$local_ref"  == "$base_ref"   ]]; then info "behind upstream — run: adots sync"
+      elif [[ "$remote_ref" == "$base_ref"   ]]; then info "ahead of upstream — run: adots push"
+      else info "diverged from upstream"; fi
+    else
+      info "pulling from remote (fast-forward only)…"
+      repo_git pull --ff-only
+      info "tracked files now at $(repo_git rev-parse --short HEAD)"
+    fi
+    ;;
+  status)
+    if [[ "${1:-}" == "--verbose" ]]; then
+      repo_git status
+      repo_git diff
+    else
+      repo_git status --short
+    fi
+    ;;
+  push)
+    repo_git push "$@"
+    ;;
+  -h|--help)
+    sed -n '2,18p' "$0" | sed 's/^# \?//'
+    ;;
+  *)
+    fail "unknown command: $cmd (try: sync, status, push, --help)"
+    ;;
+esac
