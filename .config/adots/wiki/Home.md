@@ -28,6 +28,7 @@ adots is one repo in a four-part personal-OS ecosystem:
 - [Bootstrap](Bootstrap.md) — cold start on a new machine and work-machine restore
 - [Daily Operations](Daily-Operations.md) — the `homegit` workflow and the `adots-*` tools
 - [XDG Layout](XDG-Layout.md) — the configuration-curation doctrine and `adots-doctor`
+- [The `~/my` System](My-System.md) — initialize and manage the private Cerebral Control Plane via `adots-my`
 
 ## Quick reference
 
