@@ -21,6 +21,8 @@
 ADOTS_REPO="${ADOTS_REPO:-$HOME/.homegit}"
 ADOTS_CONFIG_DIR="${ADOTS_CONFIG_DIR:-$HOME/.config/adots}"
 ADOTS_PROFILE_FILE="${ADOTS_PROFILE_FILE:-$ADOTS_CONFIG_DIR/profile}"
+ADOTS_MY_REQUIREMENTS_FILE="${ADOTS_MY_REQUIREMENTS_FILE:-$ADOTS_CONFIG_DIR/my-directory-requirements.md}"
+ADOTS_MY_SETUP_PLAN_FILE="${ADOTS_MY_SETUP_PLAN_FILE:-$ADOTS_CONFIG_DIR/my-directory-setup-consolidation-plan.md}"
 ADOTS_BIN_DIR="${ADOTS_BIN_DIR:-$HOME/bin}"
 
 # Profile management: query current profile, switch to a named profile.
@@ -93,6 +95,14 @@ ADOTS_CAPABILITIES_HEALTH=(
   "health:quiet:adots-doctor --quiet"
 )
 
+# Private knowledge system supervision: validate the safe ~/my skeleton without
+# reading vault contents or mutating the private repository.
+ADOTS_CAPABILITIES_MY=(
+  "my:doctor:adots-my doctor"
+  "my:doctor-quiet:adots-my doctor --quiet"
+  "my:doctor-json:adots-my doctor --json"
+)
+
 # Git operations: low-level access to adots as a bare repo.
 # These are thin wrappers over `git --git-dir=$HOME/.homegit --work-tree=$HOME`.
 # Prefer high-level commands (adots sync, adots status) when available.
@@ -123,17 +133,23 @@ ADOTS_CAPABILITIES_GIT=(
 #   ADOTS_REPO              = ~/.homegit (bare Git repo)
 #   ADOTS_CONFIG_DIR        = ~/.config/adots
 #   ADOTS_PROFILE_FILE      = ~/.config/adots/profile
+#   ADOTS_MY_REQUIREMENTS_FILE = ~/.config/adots/my-directory-requirements.md
+#   ADOTS_MY_SETUP_PLAN_FILE = ~/.config/adots/my-directory-setup-consolidation-plan.md
 #   ADOTS_BIN_DIR           = ~/bin
 #
 # Checks (run by zdots bootstrap):
 #   - ADOTS_REPO is a valid bare Git repo
 #   - ADOTS_CONFIG_DIR exists and is readable
 #   - ADOTS_PROFILE_FILE exists and contains a valid profile name
+#   - ADOTS_MY_REQUIREMENTS_FILE documents safe ~/my setup requirements
+#   - ADOTS_MY_SETUP_PLAN_FILE documents the adots-owned ~/my setup handoff
 #   - ~/bin exists and is on $PATH
 ADOTS_CAPABILITIES_METADATA=(
   "metadata:repo:ADOTS_REPO=$ADOTS_REPO"
   "metadata:config-dir:ADOTS_CONFIG_DIR=$ADOTS_CONFIG_DIR"
   "metadata:profile-file:ADOTS_PROFILE_FILE=$ADOTS_PROFILE_FILE"
+  "metadata:my-requirements-file:ADOTS_MY_REQUIREMENTS_FILE=$ADOTS_MY_REQUIREMENTS_FILE"
+  "metadata:my-setup-plan-file:ADOTS_MY_SETUP_PLAN_FILE=$ADOTS_MY_SETUP_PLAN_FILE"
   "metadata:bin-dir:ADOTS_BIN_DIR=$ADOTS_BIN_DIR"
 )
 
@@ -153,6 +169,7 @@ declare -a ADOTS_ALL_CAPABILITIES=(
   "${ADOTS_CAPABILITIES_PROFILE[@]}"
   "${ADOTS_CAPABILITIES_SYNC[@]}"
   "${ADOTS_CAPABILITIES_HEALTH[@]}"
+  "${ADOTS_CAPABILITIES_MY[@]}"
   "${ADOTS_CAPABILITIES_GIT[@]}"
   "${ADOTS_CAPABILITIES_METADATA[@]}"
 )
@@ -166,6 +183,8 @@ export ADOTS_ALL_CAPABILITIES
 #   - ADOTS_REPO exists and is a valid bare Git repo
 #   - ADOTS_CONFIG_DIR exists and is writable
 #   - ADOTS_PROFILE_FILE exists and is readable
+#   - ADOTS_MY_REQUIREMENTS_FILE exists and is readable
+#   - ADOTS_MY_SETUP_PLAN_FILE exists and is readable
 adots_check_status() {
   # shellcheck disable=SC2086
   set +e
@@ -183,6 +202,16 @@ adots_check_status() {
 
   if ! [ -f "$ADOTS_PROFILE_FILE" ]; then
     printf 'adots: FAIL profile file not found: %s\n' "$ADOTS_PROFILE_FILE" >&2
+    exit_code=1
+  fi
+
+  if ! [ -f "$ADOTS_MY_REQUIREMENTS_FILE" ]; then
+    printf 'adots: FAIL my requirements file not found: %s\n' "$ADOTS_MY_REQUIREMENTS_FILE" >&2
+    exit_code=1
+  fi
+
+  if ! [ -f "$ADOTS_MY_SETUP_PLAN_FILE" ]; then
+    printf 'adots: FAIL my setup plan file not found: %s\n' "$ADOTS_MY_SETUP_PLAN_FILE" >&2
     exit_code=1
   fi
 

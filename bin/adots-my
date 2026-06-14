@@ -1,0 +1,301 @@
+#!/usr/bin/env bash
+# adots-my — structural supervisor for the private ~/my system.
+#
+# Commands:
+#   adots-my doctor [--quiet] [--json] [--my-root PATH] [--strict-public-vault]
+#
+# This command validates paths and repository boundaries only. It must not crawl
+# vault contents, generate indexes, run git add, clone, pull, or publish.
+
+set -euo pipefail
+trap '' PIPE
+
+usage() {
+  cat <<'EOF'
+Usage: adots-my doctor [OPTIONS]
+
+Validate the safe ~/my directory skeleton without mutating files.
+This is the Rails-style migration-status check for the private my system.
+
+Options:
+  --my-root PATH          Validate PATH instead of $HOME/my
+  --strict-public-vault   Treat a missing vaults/public directory as a failure
+  --json                  Emit machine-readable JSON
+  -q, --quiet             Suppress passing checks
+  -h, --help              Show this help
+
+EOF
+}
+
+json_escape() {
+  local value="$1"
+  value=${value//\\/\\\\}
+  value=${value//\"/\\\"}
+  value=${value//$'\n'/\\n}
+  value=${value//$'\r'/\\r}
+  value=${value//$'\t'/\\t}
+  printf '%s' "$value"
+}
+
+MY_ROOT="${ADOTS_MY_ROOT:-${MY_HOME:-$HOME/my}}"
+STRUCTURE_CONTRACT_VERSION="my.structure.v1"
+EXPECTED_MY_REMOTE="github.com/just3ws/my"
+QUIET=0
+JSON_MODE=0
+STRICT_PUBLIC_VAULT=0
+failures=0
+warnings=0
+passes=0
+declare -a RESULTS=()
+
+record() {
+  local status="$1"
+  local label="$2"
+  local path="${3:-}"
+  local detail="${4:-}"
+
+  RESULTS+=("${status}|${label}|${path}|${detail}")
+
+  case "$status" in
+    ok)
+      passes=$((passes + 1))
+      if [[ "$QUIET" -eq 0 && "$JSON_MODE" -eq 0 ]]; then
+        printf 'adots-my: ok: %s' "$label"
+        [[ -n "$path" ]] && printf ' (%s)' "$path"
+        printf '\n'
+      fi
+      ;;
+    warn)
+      warnings=$((warnings + 1))
+      if [[ "$JSON_MODE" -eq 0 ]]; then
+        printf 'adots-my: WARN %s' "$label" >&2
+        [[ -n "$path" ]] && printf ' (%s)' "$path" >&2
+        [[ -n "$detail" ]] && printf ' — %s' "$detail" >&2
+        printf '\n' >&2
+      fi
+      ;;
+    fail)
+      failures=$((failures + 1))
+      if [[ "$JSON_MODE" -eq 0 ]]; then
+        printf 'adots-my: FAIL %s' "$label" >&2
+        [[ -n "$path" ]] && printf ' (%s)' "$path" >&2
+        [[ -n "$detail" ]] && printf ' — %s' "$detail" >&2
+        printf '\n' >&2
+      fi
+      ;;
+  esac
+}
+
+check_dir() {
+  local label="$1"
+  local path="$2"
+  if [[ -d "$path" ]]; then
+    record ok "$label" "$path"
+  else
+    record fail "$label missing" "$path"
+  fi
+}
+
+check_file() {
+  local label="$1"
+  local path="$2"
+  if [[ -f "$path" ]]; then
+    record ok "$label" "$path"
+  else
+    record fail "$label missing" "$path"
+  fi
+}
+
+is_expected_my_remote() {
+  local remote_url="$1"
+  case "$remote_url" in
+    git@github.com:just3ws/my|git@github.com:just3ws/my.git) return 0 ;;
+    https://github.com/just3ws/my|https://github.com/just3ws/my.git) return 0 ;;
+    ssh://git@github.com/just3ws/my|ssh://git@github.com/just3ws/my.git) return 0 ;;
+    github.com:just3ws/my|github.com:just3ws/my.git) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+check_my_git_repo() {
+  local path="$1"
+  if [[ ! -d "$path" ]]; then
+    record fail "~/my root missing" "$path"
+    return
+  fi
+
+  if ! git -C "$path" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    record fail "~/my is not a Git work tree" "$path"
+    return
+  fi
+
+  local top
+  top="$(git -C "$path" rev-parse --show-toplevel 2>/dev/null || true)"
+  if [[ "$top" != "$path" ]]; then
+    record fail "~/my Git top-level is not the my root" "$path" "top-level=${top:-unknown}"
+    return
+  fi
+
+  local git_dir
+  git_dir="$(git -C "$path" rev-parse --git-dir 2>/dev/null || true)"
+  if [[ "$git_dir" == "$HOME/.homegit" || "$git_dir" == ".homegit" ]]; then
+    record fail "~/my is using the adots bare repository" "$path"
+    return
+  fi
+
+  record ok "~/my is a separate Git work tree" "$path"
+}
+
+check_my_remote() {
+  local path="$1"
+  local remote_url
+  remote_url="$(git -C "$path" config --get remote.origin.url 2>/dev/null || true)"
+
+  if [[ -z "$remote_url" ]]; then
+    record fail "~/my origin remote missing" "$path" "expected $EXPECTED_MY_REMOTE"
+    return
+  fi
+
+  if is_expected_my_remote "$remote_url"; then
+    record ok "~/my origin points to $EXPECTED_MY_REMOTE" "$remote_url"
+  else
+    record fail "~/my origin remote is unexpected" "$remote_url" "expected $EXPECTED_MY_REMOTE"
+  fi
+}
+
+check_not_adots_tracked() {
+  local rel="my"
+  local home_git="${ADOTS_REPO:-$HOME/.homegit}"
+
+  if [[ ! -d "$home_git" ]]; then
+    record warn "adots bare repo unavailable; cannot verify ~/my is untracked" "$home_git"
+    return
+  fi
+
+  local tracked
+  tracked="$(git --git-dir="$home_git" --work-tree="$HOME" ls-files "$rel" 2>/dev/null | head -1 || true)"
+  if [[ -n "$tracked" ]]; then
+    record fail "adots tracks ~/my content" "$HOME/$tracked" "remove from adots before syncing"
+    return
+  fi
+
+  record ok "adots does not track ~/my content" "$MY_ROOT"
+}
+
+source_registry_defers_public_vault() {
+  local sources="$MY_ROOT/config/sources.yml"
+  [[ -f "$sources" ]] || return 1
+  grep -Eq '^[[:space:]]*-[[:space:]]*id:[[:space:]]*my\.vault\.public[[:space:]]*$' "$sources" \
+    && grep -Eq '^[[:space:]]*active:[[:space:]]*planned[[:space:]]*$' "$sources"
+}
+
+emit_json() {
+  local status="pass"
+  [[ "$failures" -gt 0 ]] && status="fail"
+
+  printf '{'
+  printf '"status":"%s",' "$status"
+  printf '"contract_version":"%s",' "$(json_escape "$STRUCTURE_CONTRACT_VERSION")"
+  printf '"expected_remote":"%s",' "$(json_escape "$EXPECTED_MY_REMOTE")"
+  printf '"my_root":"%s",' "$(json_escape "$MY_ROOT")"
+  printf '"passed":%d,' "$passes"
+  printf '"warnings":%d,' "$warnings"
+  printf '"failures":%d,' "$failures"
+  printf '"checks":['
+
+  local first=1
+  local row status_field label path detail
+  for row in "${RESULTS[@]}"; do
+    IFS='|' read -r status_field label path detail <<<"$row"
+    [[ "$first" -eq 0 ]] && printf ','
+    first=0
+    printf '{'
+    printf '"status":"%s",' "$(json_escape "$status_field")"
+    printf '"label":"%s",' "$(json_escape "$label")"
+    printf '"path":"%s",' "$(json_escape "$path")"
+    printf '"detail":"%s"' "$(json_escape "$detail")"
+    printf '}'
+  done
+
+  printf ']}\n'
+}
+
+doctor() {
+  [[ "$JSON_MODE" -eq 1 ]] || printf 'adots-my: checking %s (%s)\n' "$MY_ROOT" "$STRUCTURE_CONTRACT_VERSION"
+
+  record ok "structure contract" "$STRUCTURE_CONTRACT_VERSION"
+  check_my_git_repo "$MY_ROOT"
+  check_my_remote "$MY_ROOT"
+  check_not_adots_tracked
+  check_file "source registry" "$MY_ROOT/config/sources.yml"
+  check_dir "context engine" "$MY_ROOT/context-engine"
+  check_dir "private Obsidian vault" "$MY_ROOT/vaults/personal"
+  check_dir "archive root" "$MY_ROOT/.archive"
+
+  if [[ -d "$MY_ROOT/vaults/public" ]]; then
+    record ok "public-safe Obsidian vault" "$MY_ROOT/vaults/public"
+  elif [[ "$STRICT_PUBLIC_VAULT" -eq 1 ]]; then
+    record fail "public-safe Obsidian vault missing" "$MY_ROOT/vaults/public"
+  elif source_registry_defers_public_vault; then
+    record warn "public-safe Obsidian vault deferred" "$MY_ROOT/vaults/public" "sources.yml marks my.vault.public as planned"
+  else
+    record warn "public-safe Obsidian vault missing" "$MY_ROOT/vaults/public" "no planned deferral found in sources.yml"
+  fi
+
+  if [[ "$JSON_MODE" -eq 1 ]]; then
+    emit_json
+  else
+    printf 'adots-my: summary: %d passed, %d warning(s), %d failure(s)\n' "$passes" "$warnings" "$failures"
+  fi
+
+  [[ "$failures" -eq 0 ]]
+}
+
+cmd="${1:-doctor}"
+case "$cmd" in
+  doctor)
+    shift || true
+    ;;
+  -h|--help)
+    usage
+    exit 0
+    ;;
+  *)
+    printf 'adots-my: unknown command: %s\n' "$cmd" >&2
+    usage >&2
+    exit 2
+    ;;
+esac
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --my-root)
+      [[ $# -ge 2 ]] || { printf 'adots-my: --my-root requires a path\n' >&2; exit 2; }
+      MY_ROOT="$2"
+      shift 2
+      ;;
+    --strict-public-vault)
+      STRICT_PUBLIC_VAULT=1
+      shift
+      ;;
+    --json)
+      JSON_MODE=1
+      shift
+      ;;
+    -q|--quiet)
+      QUIET=1
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      printf 'adots-my: unknown option: %s\n' "$1" >&2
+      usage >&2
+      exit 2
+      ;;
+  esac
+done
+
+doctor
