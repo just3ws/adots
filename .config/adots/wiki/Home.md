@@ -17,10 +17,10 @@ adots is one repo in a four-part personal-OS ecosystem:
 
 | Repo | Role | Path |
 |---|---|---|
-| **zdots** | Shell platform — observability, AI stack, local services | `~/.config/zsh` |
-| **vdots** | Neovim platform — LSP, plugins | `~/.config/nvim` |
+| [**zdots**](https://github.com/just3ws/zdots/wiki) | Shell platform — observability, AI stack, local services | `~/.config/zsh` |
+| [**vdots**](https://github.com/just3ws/vdots/wiki) | Neovim platform — LSP, plugins | `~/.config/nvim` |
 | **adots** | Home dotfiles + agent coordination (this repo) | `~` (bare at `~/.homegit`) |
-| **my** | Private "Cerebral Control Plane" — local-only, no remote | `~/my` |
+| [**my**](My-System.md) | Private "Cerebral Control Plane" — local-only, no remote | `~/my` |
 
 ## The pages
 

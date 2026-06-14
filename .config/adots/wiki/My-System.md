@@ -50,7 +50,8 @@ the public-candidate vault (which ships as `active: planned`).
 
 ## Initialize on a new machine
 
-`~/my` is **not** part of the zdots cold-start bootstrap (it's private, with no
+`~/my` is **not** part of the [zdots](https://github.com/just3ws/zdots/wiki)
+cold-start bootstrap (it's private, with no
 public clone). Set it up explicitly:
 
 ```bash

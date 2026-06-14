@@ -8,10 +8,11 @@ up the personal OS, and adots knows the difference.
 **Platforms** — complex, tested, independently deployable, each with its own
 lifecycle and velocity:
 
-- **zdots** (`~/.config/zsh`) — the shell platform. OTel observability, the AI
-  stack, local services, a test suite. Drives the full bootstrap; the starting
-  point on a new machine.
-- **vdots** (`~/.config/nvim`) — the Neovim platform. LSP, plugin manager.
+- [**zdots**](https://github.com/just3ws/zdots/wiki) (`~/.config/zsh`) — the
+  shell platform. OTel observability, the AI stack, local services, a test suite.
+  Drives the full bootstrap; the starting point on a new machine.
+- [**vdots**](https://github.com/just3ws/vdots/wiki) (`~/.config/nvim`) — the
+  Neovim platform. LSP, plugin manager.
 
 **Dotfiles** — config files tracked as a unit, not deployed software:
 

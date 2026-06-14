@@ -1,7 +1,7 @@
 # Bootstrap
 
-adots is restored as part of the zdots bootstrap — you do not clone it by hand on
-a fresh machine.
+adots is restored as part of the [zdots](https://github.com/just3ws/zdots/wiki)
+bootstrap — you do not clone it by hand on a fresh machine.
 
 ## Cold start on a new machine
 
