@@ -13,6 +13,8 @@ Think about `~/my` like a private Rails application:
 - `adots-my doctor` is the `db:migrate:status` equivalent for structure.
 - Future `adots-my prepare` should behave like a Rails generator: idempotent,
   explicit, template-oriented, and safe to re-run.
+- `adots-my migrate` should behave like a Rails migration: versioned,
+  archive-preserving, and explicit about every moved legacy root.
 - Future `~/my` consolidation should behave like migrations: versioned,
   reviewable, reversible through `.archive`, and never implicit.
 - `zdots` is a runtime dependency, not the generator that owns the app schema.
@@ -115,6 +117,8 @@ Current command:
 ```bash
 adots-my doctor
 adots-my doctor --json
+adots-my prepare --dry-run
+adots-my migrate --dry-run
 ```
 
 The validator should check:
@@ -157,6 +161,10 @@ is bringing the machine toward.
 Migration rule: if existing `~/my` content must move, the operation belongs in a
 separate versioned migration plan that preserves original relative paths under
 `~/my/.archive` before any active tree cleanup is considered complete.
+
+The current migration path is `adots-my migrate`, which is responsible for
+moving legacy root-level directories like `backlog/`, `lessons/`, and
+`standards/` into `~/my/.archive/` with a note under `docs/migrations/`.
 
 ### Phase 4: zdots Delegation
 

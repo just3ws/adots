@@ -101,6 +101,10 @@ ADOTS_CAPABILITIES_MY=(
   "my:doctor:adots-my doctor"
   "my:doctor-quiet:adots-my doctor --quiet"
   "my:doctor-json:adots-my doctor --json"
+  "my:prepare:adots-my prepare"
+  "my:prepare-dry-run:adots-my prepare --dry-run"
+  "my:migrate:adots-my migrate"
+  "my:migrate-dry-run:adots-my migrate --dry-run"
 )
 
 # Git operations: low-level access to adots as a bare repo.

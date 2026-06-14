@@ -26,8 +26,9 @@ The setup consolidation plan lives at
 knowledge into either repository.
 
 Model `~/my` structure like a private Rails application: `adots-my doctor` is the
-read-only migration-status check, future prepare commands are generators, and
-future consolidation work is handled as explicit structural migrations.
+read-only migration-status check, `adots-my prepare` is the generator path for
+safe skeleton creation, and `adots-my migrate` is the explicit structural
+migration path for archive-preserving consolidation.
 
 ## Non-Negotiable Safety Rules
 
@@ -137,6 +138,8 @@ Recommended read-only checks:
 
 ```bash
 adots-my doctor
+adots-my prepare --dry-run
+adots-my migrate --dry-run
 test -d "$HOME/my"
 test -d "$HOME/my/.git"
 test -f "$HOME/my/config/sources.yml"

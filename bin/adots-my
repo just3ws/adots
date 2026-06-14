@@ -12,14 +12,21 @@ trap '' PIPE
 
 usage() {
   cat <<'EOF'
-Usage: adots-my doctor [OPTIONS]
+Usage: adots-my <command> [OPTIONS]
 
 Validate the safe ~/my directory skeleton without mutating files.
 This is the Rails-style migration-status check for the private my system.
 
+Commands:
+  doctor                  Read-only status check for the ~/my contract
+  prepare                 Create the safe active skeleton and templates
+  migrate                 Move legacy roots into ~/my/.archive with a note
+
 Options:
   --my-root PATH          Validate PATH instead of $HOME/my
   --strict-public-vault   Treat a missing vaults/public directory as a failure
+  --dry-run               Preview prepare/migrate actions without writing
+  --apply                 Apply prepare/migrate actions
   --json                  Emit machine-readable JSON
   -q, --quiet             Suppress passing checks
   -h, --help              Show this help
@@ -39,13 +46,18 @@ json_escape() {
 
 MY_ROOT="${ADOTS_MY_ROOT:-${MY_HOME:-$HOME/my}}"
 STRUCTURE_CONTRACT_VERSION="my.structure.v1"
+STRUCTURE_MIGRATION_VERSION="my.structure.migration.v1"
 EXPECTED_MY_REMOTE="github.com/just3ws/my"
 QUIET=0
 JSON_MODE=0
 STRICT_PUBLIC_VAULT=0
+DRY_RUN=0
+APPLY=0
 failures=0
 warnings=0
 passes=0
+actions_planned=0
+actions_applied=0
 declare -a RESULTS=()
 
 record() {
@@ -96,6 +108,211 @@ check_dir() {
   fi
 }
 
+action_line() {
+  local verb="$1"
+  local path="$2"
+  if [[ "$QUIET" -eq 0 || "$verb" == fail* ]]; then
+    printf 'adots-my: %s %s\n' "$verb" "$path"
+  fi
+}
+
+ensure_dir_state() {
+  local path="$1"
+  local label="${2:-$path}"
+
+  if [[ -d "$path" ]]; then
+    action_line "ok: dir exists" "$label"
+    return 0
+  fi
+
+  if [[ "$DRY_RUN" -eq 1 ]]; then
+    action_line "would create dir" "$label"
+    actions_planned=$((actions_planned + 1))
+    return 0
+  fi
+
+  mkdir -p "$path"
+  action_line "created dir" "$label"
+  actions_applied=$((actions_applied + 1))
+}
+
+ensure_file_state() {
+  local path="$1"
+  local content="$2"
+  local label="${3:-$path}"
+
+  if [[ -f "$path" ]]; then
+    action_line "ok: file exists" "$label"
+    return 0
+  fi
+
+  if [[ "$DRY_RUN" -eq 1 ]]; then
+    action_line "would write file" "$label"
+    actions_planned=$((actions_planned + 1))
+    return 0
+  fi
+
+  mkdir -p "$(dirname "$path")"
+  printf '%s' "$content" > "$path"
+  action_line "wrote file" "$label"
+  actions_applied=$((actions_applied + 1))
+}
+
+ensure_my_skeleton() {
+  ensure_dir_state "$MY_ROOT/.archive" "$MY_ROOT/.archive"
+  ensure_dir_state "$MY_ROOT/config" "$MY_ROOT/config"
+  ensure_dir_state "$MY_ROOT/docs" "$MY_ROOT/docs"
+  ensure_dir_state "$MY_ROOT/docs/migrations" "$MY_ROOT/docs/migrations"
+  ensure_dir_state "$MY_ROOT/context-engine" "$MY_ROOT/context-engine"
+  ensure_dir_state "$MY_ROOT/knowledge" "$MY_ROOT/knowledge"
+  ensure_dir_state "$MY_ROOT/knowledge/inbox" "$MY_ROOT/knowledge/inbox"
+  ensure_dir_state "$MY_ROOT/knowledge/lessons" "$MY_ROOT/knowledge/lessons"
+  ensure_dir_state "$MY_ROOT/knowledge/methodologies" "$MY_ROOT/knowledge/methodologies"
+  ensure_dir_state "$MY_ROOT/knowledge/references" "$MY_ROOT/knowledge/references"
+  ensure_dir_state "$MY_ROOT/vaults" "$MY_ROOT/vaults"
+  ensure_dir_state "$MY_ROOT/vaults/personal" "$MY_ROOT/vaults/personal"
+  ensure_dir_state "$MY_ROOT/vaults/public" "$MY_ROOT/vaults/public"
+
+  ensure_file_state \
+    "$MY_ROOT/config/sources.yml" \
+    "version: 1
+local_domain: my.localhost
+
+archive:
+  root: ~/my/.archive
+  preserve_relative_path: true
+  policy: inactive_unmapped_sources_only
+
+sources:
+  - id: my.context_engine
+    kind: rails_service
+    path: ~/my/context-engine
+    visibility: internal
+    active: true
+    role: local_system_intelligence_and_context_api
+    publish: never
+
+  - id: my.vault.personal
+    kind: obsidian_vault
+    path: ~/my/vaults/personal
+    visibility: private
+    active: true
+    role: private_personal_authoring
+    publish: never
+
+  - id: my.vault.public
+    kind: obsidian_vault
+    path: ~/my/vaults/public
+    visibility: public_safe
+    active: planned
+    role: public_candidate_authoring
+    publish: approval_required
+" \
+    "$MY_ROOT/config/sources.yml"
+}
+
+move_legacy_root_to_archive() {
+  local rel="$1"
+  local src="$MY_ROOT/$rel"
+  local dest="$MY_ROOT/.archive/$rel"
+
+  if [[ ! -e "$src" && ! -L "$src" ]]; then
+    action_line "skip: missing" "$src"
+    return 0
+  fi
+
+  if [[ -e "$dest" || -L "$dest" ]]; then
+    record fail "archive collision for $rel" "$dest" "refusing to overwrite existing archive entry"
+    return 1
+  fi
+
+  if [[ "$DRY_RUN" -eq 1 ]]; then
+    action_line "would move" "$src -> $dest"
+    actions_planned=$((actions_planned + 1))
+    return 0
+  fi
+
+  mkdir -p "$MY_ROOT/.archive"
+  mv "$src" "$dest"
+  action_line "moved" "$src -> $dest"
+  actions_applied=$((actions_applied + 1))
+}
+
+write_migration_note() {
+  local note="$MY_ROOT/docs/migrations/${STRUCTURE_MIGRATION_VERSION}.md"
+  local content="$1"
+
+  if [[ -f "$note" ]]; then
+    action_line "ok: migration note exists" "$note"
+    return 0
+  fi
+
+  if [[ "$DRY_RUN" -eq 1 ]]; then
+    action_line "would write migration note" "$note"
+    actions_planned=$((actions_planned + 1))
+    return 0
+  fi
+
+  mkdir -p "$(dirname "$note")"
+  printf '%s' "$content" > "$note"
+  action_line "wrote migration note" "$note"
+  actions_applied=$((actions_applied + 1))
+}
+
+run_prepare() {
+  [[ "$JSON_MODE" -eq 0 ]] || { printf 'adots-my: prepare does not support --json yet\n' >&2; return 2; }
+  [[ "$DRY_RUN" -eq 1 || "$APPLY" -eq 1 ]] || DRY_RUN=1
+  if [[ "$APPLY" -eq 1 && "$DRY_RUN" -eq 1 ]]; then
+    printf 'adots-my: choose either --dry-run or --apply\n' >&2
+    return 2
+  fi
+
+  printf 'adots-my: prepare %s (%s)\n' "$MY_ROOT" "$STRUCTURE_CONTRACT_VERSION"
+  check_my_git_repo "$MY_ROOT"
+  check_my_remote "$MY_ROOT"
+  ensure_my_skeleton
+  printf 'adots-my: summary: %d planned, %d applied, %d failure(s)\n' "$actions_planned" "$actions_applied" "$failures"
+  [[ "$failures" -eq 0 ]]
+}
+
+run_migrate() {
+  [[ "$JSON_MODE" -eq 0 ]] || { printf 'adots-my: migrate does not support --json yet\n' >&2; return 2; }
+  [[ "$DRY_RUN" -eq 1 || "$APPLY" -eq 1 ]] || DRY_RUN=1
+  if [[ "$APPLY" -eq 1 && "$DRY_RUN" -eq 1 ]]; then
+    printf 'adots-my: choose either --dry-run or --apply\n' >&2
+    return 2
+  fi
+
+  local moved=()
+  printf 'adots-my: migrate %s (%s)\n' "$MY_ROOT" "$STRUCTURE_MIGRATION_VERSION"
+  check_my_git_repo "$MY_ROOT"
+  check_my_remote "$MY_ROOT"
+  ensure_dir_state "$MY_ROOT/.archive" "$MY_ROOT/.archive"
+  ensure_dir_state "$MY_ROOT/docs" "$MY_ROOT/docs"
+  ensure_dir_state "$MY_ROOT/docs/migrations" "$MY_ROOT/docs/migrations"
+
+  for legacy in backlog lessons methodologies standards transcripts adrs _archive; do
+    if [[ -e "$MY_ROOT/$legacy" || -L "$MY_ROOT/$legacy" ]]; then
+      moved+=("$legacy -> .archive/$legacy")
+      move_legacy_root_to_archive "$legacy"
+    fi
+  done
+
+  if [[ ${#moved[@]} -gt 0 ]]; then
+    write_migration_note "# ${STRUCTURE_MIGRATION_VERSION}
+
+Legacy roots moved into \`~/my/.archive\`:
+
+$(for item in "${moved[@]}"; do printf -- '- %s\n' "$item"; done)
+"
+  else
+    action_line "ok: no legacy roots found" "$MY_ROOT"
+  fi
+
+  printf 'adots-my: summary: %d planned, %d applied, %d failure(s)\n' "$actions_planned" "$actions_applied" "$failures"
+  [[ "$failures" -eq 0 ]]
+}
+
 check_file() {
   local label="$1"
   local path="$2"
@@ -124,15 +341,20 @@ check_my_git_repo() {
     return
   fi
 
+  local resolved_path
+  resolved_path="$(cd "$path" && pwd -P)"
+
   if ! git -C "$path" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-    record fail "~/my is not a Git work tree" "$path"
+    record fail "~/my is not a Git work tree" "$resolved_path"
     return
   fi
 
   local top
   top="$(git -C "$path" rev-parse --show-toplevel 2>/dev/null || true)"
-  if [[ "$top" != "$path" ]]; then
-    record fail "~/my Git top-level is not the my root" "$path" "top-level=${top:-unknown}"
+  local resolved_top
+  resolved_top="$(cd "$top" && pwd -P)"
+  if [[ "$resolved_top" != "$resolved_path" ]]; then
+    record fail "~/my Git top-level is not the my root" "$resolved_path" "top-level=${resolved_top:-unknown}"
     return
   fi
 
@@ -143,7 +365,7 @@ check_my_git_repo() {
     return
   fi
 
-  record ok "~/my is a separate Git work tree" "$path"
+  record ok "~/my is a separate Git work tree" "$resolved_path"
 }
 
 check_my_remote() {
@@ -256,6 +478,12 @@ case "$cmd" in
   doctor)
     shift || true
     ;;
+  prepare)
+    shift || true
+    ;;
+  migrate)
+    shift || true
+    ;;
   -h|--help)
     usage
     exit 0
@@ -275,10 +503,20 @@ while [[ $# -gt 0 ]]; do
       shift 2
       ;;
     --strict-public-vault)
+      [[ "$cmd" == doctor ]] || { printf 'adots-my: --strict-public-vault only applies to doctor\n' >&2; exit 2; }
       STRICT_PUBLIC_VAULT=1
       shift
       ;;
+    --dry-run)
+      DRY_RUN=1
+      shift
+      ;;
+    --apply)
+      APPLY=1
+      shift
+      ;;
     --json)
+      [[ "$cmd" == doctor ]] || { printf 'adots-my: --json only applies to doctor for now\n' >&2; exit 2; }
       JSON_MODE=1
       shift
       ;;
@@ -298,4 +536,8 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-doctor
+case "$cmd" in
+  doctor) doctor ;;
+  prepare) run_prepare ;;
+  migrate) run_migrate ;;
+esac
