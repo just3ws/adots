@@ -266,9 +266,9 @@ ensure_zdots_export() {
 
 info "checking adots bare repo"
 if repo_git rev-parse --is-bare-repository >/dev/null 2>&1; then
-  info "ok: ~/.homegit is a bare repo"
+  info "ok: $HOME_GIT_DIR is a bare repo"
 else
-  fail "~/.homegit is not a usable bare repo"
+  fail "$HOME_GIT_DIR is not a usable bare repo"
 fi
 
 info "checking closed-system dependencies"
@@ -281,6 +281,20 @@ if [[ -x "$ZDOTDIR/bin/bootstrap" ]]; then
   info "ok: zdots bootstrap present"
 else
   fail "zdots bootstrap missing at $ZDOTDIR/bin/bootstrap"
+fi
+
+info "checking zdots peer health"
+zdots_health=0
+if command -v zdots-doctor >/dev/null 2>&1; then
+  if zdots-doctor --no-runtime >/dev/null 2>&1; then
+    info "ok: zdots is healthy"
+  else
+    warn "zdots unhealthy — run 'zdots-doctor --no-runtime' for details"
+    zdots_health=1
+  fi
+else
+  warn "zdots-doctor command not found"
+  zdots_health=1
 fi
 
 info "checking command dependencies"
@@ -361,6 +375,14 @@ if command -v mise >/dev/null 2>&1; then
     fail "Ruby is not resolved from ~/.config/mise/config.toml"
   fi
 fi
+
+info "health summary"
+if [[ -z "${zdots_health:-}" ]]; then
+  zdots_health=0
+fi
+printf 'adots-doctor: adots=%s zdots=%s\n' \
+  "$([ "$failures" -eq 0 ] && echo 'healthy' || echo 'unhealthy')" \
+  "$([ "$zdots_health" -eq 0 ] && echo 'healthy' || echo 'unhealthy')"
 
 if [[ "$failures" -gt 0 ]]; then
   printf 'adots-doctor: %d failure(s), %d warning(s)\n' "$failures" "$warnings" >&2
