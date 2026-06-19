@@ -7,6 +7,10 @@
 # This command validates paths and repository boundaries only. It must not crawl
 # vault contents, generate indexes, run git add, clone, pull, or publish.
 
+# "~/my" appears literally in user-facing check labels; the tilde is intentional
+# display text, not a path to expand.
+# shellcheck disable=SC2088
+
 set -euo pipefail
 trap '' PIPE
 
@@ -209,6 +213,19 @@ sources:
     publish: approval_required
 " \
     "$MY_ROOT/config/sources.yml"
+
+  # Contract self-declaration (decision-007 §3). adots-my is the authority for
+  # the contract version; this file is the my repo's attestation that its
+  # skeleton conforms. `adots-my doctor` verifies the declared value matches.
+  ensure_file_state \
+    "$MY_ROOT/config/structure.yml" \
+    "# my.structure contract declaration (decision-007 §3).
+# adots-my is the authority for the contract version; this file is the my
+# repo's self-attestation that its skeleton conforms to that contract.
+# 'adots-my doctor' verifies this declared value matches the authority.
+contract: ${STRUCTURE_CONTRACT_VERSION}
+" \
+    "$MY_ROOT/config/structure.yml"
 }
 
 move_legacy_root_to_archive() {
@@ -320,6 +337,26 @@ check_file() {
     record ok "$label" "$path"
   else
     record fail "$label missing" "$path"
+  fi
+}
+
+# Verify the my repo's self-declared contract version (config/structure.yml)
+# matches the authority (STRUCTURE_CONTRACT_VERSION). decision-007 §3.
+check_contract_declaration() {
+  local decl="$MY_ROOT/config/structure.yml"
+  if [[ ! -f "$decl" ]]; then
+    record fail "contract declaration missing" "$decl" "run: adots-my prepare --apply"
+    return
+  fi
+
+  local declared
+  declared="$(sed -n 's/^[[:space:]]*contract:[[:space:]]*//p' "$decl" | head -1 | tr -d '[:space:]')"
+  if [[ -z "$declared" ]]; then
+    record fail "contract declaration unparseable" "$decl" "no 'contract:' key found"
+  elif [[ "$declared" == "$STRUCTURE_CONTRACT_VERSION" ]]; then
+    record ok "contract declaration" "$decl" "$declared"
+  else
+    record fail "contract declaration mismatch" "$decl" "declared=$declared expected=$STRUCTURE_CONTRACT_VERSION"
   fi
 }
 
@@ -446,6 +483,7 @@ doctor() {
   [[ "$JSON_MODE" -eq 1 ]] || printf 'adots-my: checking %s (%s)\n' "$MY_ROOT" "$STRUCTURE_CONTRACT_VERSION"
 
   record ok "structure contract" "$STRUCTURE_CONTRACT_VERSION"
+  check_contract_declaration
   check_my_git_repo "$MY_ROOT"
   check_my_remote "$MY_ROOT"
   check_not_adots_tracked
