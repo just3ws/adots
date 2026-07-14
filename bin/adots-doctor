@@ -68,6 +68,25 @@ restore_tracked_file() {
   info "restored $rel from adots"
 }
 
+ensure_colima_homedir_root() {
+  # colima ignores $XDG_CONFIG_HOME whenever ~/.colima exists — upstream
+  # behavior, not fixable here. Decided 2026-07-04 (zdots Z-195/Z-181):
+  # ~/.colima is canonical, ~/.config/colima must not exist.
+  local canonical="$HOME/.colima"
+  local xdg="$HOME/.config/colima"
+
+  if [[ -d "$xdg" && ! -L "$xdg" ]]; then
+    if [[ "$FIX" -ne 1 ]]; then
+      fail ".config/colima exists — ~/.colima is canonical, colima ignores XDG"
+      return 1
+    fi
+    backup_path ".config/colima"
+    info "removed stale .config/colima (~/.colima is canonical)"
+  else
+    info "ok: colima uses homedir canonical root ~/.colima"
+  fi
+}
+
 ensure_directory() {
   local rel="$1"
   local path="$HOME/$rel"
@@ -274,7 +293,7 @@ fi
 info "checking closed-system dependencies"
 ensure_directory ".config/zsh"
 ensure_directory ".config/nvim"
-ensure_xdg_root_pair "colima"
+ensure_colima_homedir_root
 ensure_xdg_root_pair "docker"
 
 if [[ -x "$ZDOTDIR/bin/bootstrap" ]]; then
