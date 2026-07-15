@@ -1,1 +1,1 @@
-/Users/mike/.config/zsh/bashrc
+.config/zsh/bashrc

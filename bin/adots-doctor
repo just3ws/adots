@@ -304,8 +304,10 @@ fi
 
 info "checking zdots peer health"
 zdots_health=0
-if command -v zdots-doctor >/dev/null 2>&1; then
-  if zdots-doctor --no-runtime >/dev/null 2>&1; then
+if [[ -n "${_DOCTOR_PEER:-}" ]]; then
+  info "skip: zdots peer health (already inside a peer-health chain)"
+elif command -v zdots-doctor >/dev/null 2>&1; then
+  if _DOCTOR_PEER=1 zdots-doctor --no-runtime >/dev/null 2>&1; then
     info "ok: zdots is healthy"
   else
     warn "zdots unhealthy — run 'zdots-doctor --no-runtime' for details"
@@ -355,7 +357,7 @@ for rel in \
   .config/psql/psqlrc \
   .profile \
   .ripgreprc \
-  .tmux.conf \
+  .config/tmux/tmux.conf \
   .yarnrc \
   README.md \
   bootstrap.sh \

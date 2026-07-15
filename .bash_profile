@@ -1,1 +1,1 @@
-/Users/mike/.config/zsh/bash_profile
+.config/zsh/bash_profile

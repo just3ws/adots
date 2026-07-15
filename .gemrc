@@ -3,3 +3,11 @@
 :verbose: true
 :concurrent_downloads: 8
 gem: "--no-document --color"
+# gem CLI through the gemstash Platform Service (bundler already mirrors via
+# ~/.config/bundle/config). rubygems.org second: RubyGems warns and falls
+# through when a source is down, so a stopped gemstash (or a fresh machine
+# where ~/.default-gems is installing gemstash itself) degrades instead of
+# deadlocking. See gemstash-ctl(8).
+:sources:
+- http://127.0.0.1:9292
+- https://rubygems.org

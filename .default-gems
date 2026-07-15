@@ -1,0 +1,7 @@
+# mise / ruby-build default gems — installed into every Ruby mise builds.
+# Keeps the zdots gemstash Platform Service working across Ruby version bumps:
+# gemstash itself plus `pg` (its Postgres driver — not a gemstash dependency,
+# so it must be listed explicitly or the postgres adapter fails on a new Ruby).
+# See gemstash-ctl(8). Machine-local; track in adots if you want it to travel.
+gemstash
+pg

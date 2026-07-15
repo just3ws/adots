@@ -1,0 +1,5 @@
+# Ghostty config — read by cmux's embedded terminal.
+# Apply changes with: cmux reload-config
+font-family = FiraCode Nerd Font
+font-style = Retina
+theme = Dracula
