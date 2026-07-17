@@ -1,0 +1,44 @@
+#!/bin/sh
+# git lg — graph log with per-file A/M/D status and a per-commit Δ summary
+# (change-type counts + line deltas). Two git passes: name-status can't be
+# combined with numstat in one, so line totals come from a second pass.
+# -s: summary only (hide the per-file list; ours, not git log's -s/--no-patch,
+# which would suppress the name-status output the counts are built from).
+LG_SUMMARY=
+for a in "$@"; do
+  shift
+  [ "$a" = "-s" ] && { LG_SUMMARY=1; continue; }
+  set -- "$@" "$a"
+done
+export LG_SUMMARY
+git log --graph --name-status --color=always "$@" | perl -e '
+  my (%add, %del);
+  { # numstat pass: per-commit +/- line totals, keyed by short hash
+    open my $ns, "-|", "git", "log", "--numstat", "--format=%h", @ARGV or die $!;
+    my $h;
+    while (<$ns>) {
+      if (/^([0-9a-f]{6,40})$/) { $h = $1 }
+      elsif (/^(\d+)\t(\d+)\t/) { $add{$h} += $1; $del{$h} += $2 }  # "-" (binary) skipped
+    }
+  }
+  my (%c, $pre, $h);
+  sub flush {
+    return unless %c;
+    my $sum = join " ", map { "$c{$_}$_" } grep { $c{$_} } qw(A M D R C T);
+    $sum .= sprintf " \e[32m+%d\e[0m\e[2m \e[31m-%d\e[0m", $add{$h} // 0, $del{$h} // 0;
+    print "$pre\e[2m\x{394} $sum\e[0m\n";
+    %c = ();
+  }
+  binmode STDOUT, ":utf8";
+  while (<STDIN>) {
+    (my $s = $_) =~ s/\e\[[0-9;]*m//g;          # ANSI-stripped copy for matching
+    next if $s =~ /^[\s|\/\\]*$/;               # drop graph-only blank lines
+    if ($s =~ /^[\s|\/\\]*\*\s+([0-9a-f]{6,40})/) { flush(); $h = $1 }
+    if ($s =~ /^([\s|\/\\]*)([AMDRCT])[0-9]*\t/) {
+      $pre = $1; $c{$2}++;
+      next if $ENV{LG_SUMMARY};
+    }
+    print;
+  }
+  flush();
+' -- "$@" | less -RFX
