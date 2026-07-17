@@ -54,3 +54,7 @@
 	colorMoved = default
 [safe]
 	directory = /app
+[format]
+	pretty = %C(yellow)%h%C(auto)%d %s %C(dim)%an, %ar%Creset
+[log]
+	date = relative
