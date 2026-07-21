@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+# mise-ruby-legacy — install a pre-3.0 Ruby via mise on modern macOS/arm64.
+#
+# Ruby 2.x needs OpenSSL 1.1, which Homebrew removed entirely. mise/ruby-build
+# autodetects Homebrew's openssl@3 and the build dies in ext/openssl. This
+# script builds a private static OpenSSL 1.1.1w once, wires in a CA bundle,
+# and points the Ruby build at it via RUBY_CONFIGURE_OPTS.
+#
+# Idempotent and repairable: safe to re-run. OpenSSL is skipped if already
+# built; to force a rebuild, `rm -rf ~/.local/opt/openssl-1.1.1w` and re-run.
+# To rebuild the Ruby itself: `mise uninstall ruby@<version>` and re-run.
+#
+# Usage:
+#   mise-ruby-legacy            # installs ruby 2.6.10
+#   mise-ruby-legacy 2.7.8      # any 2.x version
+#
+# Known-cosmetic: the gdbm extension fails to build (missing lib) and is
+# skipped by ruby-build. Nothing we use needs gdbm.
+set -euo pipefail
+
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+  sed -n '2,18p' "$0" | sed 's/^# \?//'
+  exit 0
+fi
+
+RUBY_VERSION="${1:-2.6.10}"
+OPENSSL_VERSION="1.1.1w"
+OPENSSL_SHA256="cf3098950cb4d853ad95c0841f1f9c6d3dc102dccfcacd521d93925208b76ac8"
+PREFIX="$HOME/.local/opt/openssl-$OPENSSL_VERSION"
+
+if [[ ! -x "$PREFIX/bin/openssl" ]]; then
+  echo "==> Building OpenSSL $OPENSSL_VERSION into $PREFIX"
+  build_dir="$(mktemp -d)"
+  trap 'rm -rf "$build_dir"' EXIT
+  cd "$build_dir"
+  curl -fsSLO "https://github.com/openssl/openssl/releases/download/OpenSSL_${OPENSSL_VERSION//./_}/openssl-$OPENSSL_VERSION.tar.gz"
+  echo "$OPENSSL_SHA256  openssl-$OPENSSL_VERSION.tar.gz" | shasum -a 256 -c -
+  tar xzf "openssl-$OPENSSL_VERSION.tar.gz"
+  cd "openssl-$OPENSSL_VERSION"
+  ./config --prefix="$PREFIX" --openssldir="$PREFIX" no-shared >/dev/null
+  make -j"$(sysctl -n hw.ncpu)" >/dev/null
+  make install_sw install_ssldirs >/dev/null
+else
+  echo "==> OpenSSL $OPENSSL_VERSION already built at $PREFIX"
+fi
+
+# OpenSSL built from source ships no CA certs; borrow the system/Homebrew bundle.
+for ca in /opt/homebrew/etc/ca-certificates/cert.pem /etc/ssl/cert.pem; do
+  if [[ -f "$ca" ]]; then
+    ln -sf "$ca" "$PREFIX/cert.pem"
+    break
+  fi
+done
+
+echo "==> Installing ruby $RUBY_VERSION via mise"
+RUBY_CONFIGURE_OPTS="--with-openssl-dir=$PREFIX" mise install "ruby@$RUBY_VERSION"
+
+echo "==> Verifying"
+mise exec "ruby@$RUBY_VERSION" -- ruby -v
+mise exec "ruby@$RUBY_VERSION" -- ruby -ropenssl -e 'puts OpenSSL::OPENSSL_VERSION'
+mise exec "ruby@$RUBY_VERSION" -- ruby -rnet/http \
+  -e 'puts "TLS OK: " + Net::HTTP.get_response(URI("https://api.github.com")).code'
