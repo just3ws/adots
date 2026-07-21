@@ -367,6 +367,12 @@ is_expected_my_remote() {
     https://github.com/just3ws/my|https://github.com/just3ws/my.git) return 0 ;;
     ssh://git@github.com/just3ws/my|ssh://git@github.com/just3ws/my.git) return 0 ;;
     github.com:just3ws/my|github.com:just3ws/my.git) return 0 ;;
+    git@*:just3ws/my|git@*:just3ws/my.git)
+      # SSH host alias (e.g. work.github.com) — accept when it resolves to github.com
+      local host="${remote_url#git@}"
+      host="${host%%:*}"
+      [[ "$(ssh -G "$host" 2>/dev/null | awk '/^hostname /{print $2; exit}')" == "github.com" ]] && return 0
+      return 1 ;;
     *) return 1 ;;
   esac
 }
