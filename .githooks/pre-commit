@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+# adots pre-commit guard — never allow CC per-project memory into history.
+# The .claude/projects/ subtree (Claude Code session/memory residue) once
+# leaked work-confidential content via a broad `git add` in this $HOME
+# work-tree. .gitignore blocks plain adds; this catches `git add -f`.
+# Dependency-free by design (runs on every machine, incl. ones without secret-scan).
+if git diff --cached --name-only | grep -q '^\.claude/projects/'; then
+  echo "pre-commit: refusing .claude/projects/ (CC memory — never track)." >&2
+  echo "  unstage: git rm --cached -r .claude/projects/" >&2
+  exit 1
+fi
