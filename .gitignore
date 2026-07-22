@@ -1,0 +1,2 @@
+# CC per-project memory/session dir — never track (guards the work subtree leak purged from history)
+.claude/projects/
