@@ -177,9 +177,10 @@ ensure_symlink() {
   fi
 
   if [[ -L "$path" ]]; then
-    local actual
-    actual="$(readlink "$path")"
-    if [[ "$actual" == "$target" ]]; then
+    local actual_resolved target_resolved
+    actual_resolved="$(realpath "$path" 2>/dev/null)"
+    target_resolved="$(realpath "$target" 2>/dev/null)"
+    if [[ -n "$actual_resolved" && "$actual_resolved" == "$target_resolved" ]]; then
       info "ok: $rel -> $target"
       return 0
     fi
