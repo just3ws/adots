@@ -40,6 +40,7 @@
 	light = false
 	line-numbers = true
 	side-by-side = true
+	syntax-theme = Kanagawa Wave
 
 [interactive]
 	diffFilter = delta --color-only

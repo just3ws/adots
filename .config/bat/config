@@ -1,5 +1,5 @@
 # bat configuration
---theme="Dracula-pro"
+--theme="Kanagawa Wave"
 --italic-text=always
 --style="numbers,changes,header"
 --map-syntax "*.jenkinsfile:Groovy"
