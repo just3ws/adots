@@ -1,0 +1,95 @@
+# Kanagawa Wave theme for btop.
+# Palette verified against iTerm2-Color-Schemes' Kanagawa Wave.itermcolors
+# and kanagawa.nvim's named colors. Structure mirrors btop's bundled dracula.theme.
+# ponytail: main_bg hand-tuned bluer/more saturated (#1F1F28 -> #1A1B2F); all
+# other values are unmodified upstream Wave.
+
+# Main background, empty for terminal default, need to be empty if you want transparent background
+theme[main_bg]="#1A1B2F"
+
+# Main text color
+theme[main_fg]="#DCD7BA"
+
+# Title color for boxes
+theme[title]="#DCD7BA"
+
+# Highlight color for keyboard shortcuts
+theme[hi_fg]="#727169"
+
+# Background color of selected item in processes box
+theme[selected_bg]="#957FB8"
+
+# Foreground color of selected item in processes box
+theme[selected_fg]="#DCD7BA"
+
+# Color of inactive/disabled text
+theme[inactive_fg]="#2A2A37"
+
+# Color of text appearing on top of graphs, i.e uptime and current network graph scaling
+theme[graph_text]="#DCD7BA"
+
+# Background color of the percentage meters
+theme[meter_bg]="#2A2A37"
+
+# Misc colors for processes box including mini cpu graphs, details memory graph and details status text
+theme[proc_misc]="#957FB8"
+
+# Cpu box outline color
+theme[cpu_box]="#957FB8"
+
+# Memory/disks box outline color
+theme[mem_box]="#98BB6C"
+
+# Net up/down box outline color
+theme[net_box]="#C34043"
+
+# Processes box outline color
+theme[proc_box]="#7AA89F"
+
+# Box divider line and small boxes line color
+theme[div_line]="#2A2A37"
+
+# Temperature graph colors
+theme[temp_start]="#957FB8"
+theme[temp_mid]="#D27E99"
+theme[temp_end]="#C34043"
+
+# CPU graph colors
+theme[cpu_start]="#957FB8"
+theme[cpu_mid]="#7AA89F"
+theme[cpu_end]="#98BB6C"
+
+# Mem/Disk free meter
+theme[free_start]="#E46876"
+theme[free_mid]="#D27E99"
+theme[free_end]="#C34043"
+
+# Mem/Disk cached meter
+theme[cached_start]="#A3D4D5"
+theme[cached_mid]="#7AA89F"
+theme[cached_end]="#6A9589"
+
+# Mem/Disk available meter
+theme[available_start]="#E6C384"
+theme[available_mid]="#FFA066"
+theme[available_end]="#FF9E3B"
+
+# Mem/Disk used meter
+theme[used_start]="#98BB6C"
+theme[used_mid]="#76946A"
+theme[used_end]="#6A9589"
+
+# Download graph colors
+theme[download_start]="#957FB8"
+theme[download_mid]="#98BB6C"
+theme[download_end]="#7AA89F"
+
+# Upload graph colors
+theme[upload_start]="#938AA9"
+theme[upload_mid]="#D27E99"
+theme[upload_end]="#C34043"
+
+# Process box color gradient for threads, mem and cpu usage
+theme[process_start]="#98BB6C"
+theme[process_mid]="#6A9589"
+theme[process_end]="#727169"
