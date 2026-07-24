@@ -86,15 +86,15 @@ theme:
             compact: false
     colors:
         text:
-            primary: "#f8f8f2"
-            secondary: "#6272a4"
-            inverted: "#282a36"
-            faint: "#44475a"
-            warning: "#ffb86c"
-            error: "#ff5555"
-            success: "#50fa7b"
+            primary: "#DCD7BA"
+            secondary: "#7AA89F"
+            inverted: "#1A1B2F"
+            faint: "#54546D"
+            warning: "#FFA066"
+            error: "#E82424"
+            success: "#98BB6C"
         background:
-            selected: "#44475a"
+            selected: "#2D4F67"
 pager:
     diff: ""
 confirmQuit: false

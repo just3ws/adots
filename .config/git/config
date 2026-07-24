@@ -41,6 +41,16 @@
 	line-numbers = true
 	side-by-side = true
 	syntax-theme = Kanagawa Wave
+	minus-style = syntax "#43242B"
+	minus-emph-style = syntax "#672E30"
+	plus-style = syntax "#2B3328"
+	plus-emph-style = syntax "#43503A"
+	line-numbers-minus-style = "#C34043"
+	line-numbers-plus-style = "#76946A"
+	line-numbers-zero-style = "#54546D"
+	file-style = "#7E9CD8" bold
+	hunk-header-style = "#957FB8"
+	hunk-header-decoration-style = "#54546D" box
 
 [interactive]
 	diffFilter = delta --color-only

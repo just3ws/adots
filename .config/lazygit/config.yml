@@ -1,28 +1,28 @@
 gui:
   theme:
     activeBorderColor:
-      - "#bd93f9" # Purple
+      - "#957FB8" # oniViolet
       - bold
     inactiveBorderColor:
-      - "#6272a4" # Comment
+      - "#54546D" # sumiInk6
     optionsTextColor:
-      - "#8be9fd" # Cyan
+      - "#7AA89F" # waveAqua2
     selectedLineBgColor:
-      - "#44475a" # Selection
+      - "#2D4F67" # waveBlue2
     selectedRangeBgColor:
-      - "#44475a" # Selection
+      - "#2D4F67" # waveBlue2
     cherryPickedCommitBgColor:
-      - "#50fa7b" # Green
+      - "#98BB6C" # springGreen
     cherryPickedCommitFgColor:
-      - "#bd93f9" # Purple
+      - "#1A1B2F" # bg (contrast on green)
     unstagedChangesColor:
-      - "#ff5555" # Red
+      - "#C34043" # autumnRed
     defaultFgColor:
-      - "#f8f8f2" # Foreground
+      - "#DCD7BA" # fujiWhite
 git:
   paging:
     colorArg: always
-    pager: delta --dark --paging=never
+    pager: delta --dark --syntax-theme "Kanagawa Wave" --paging=never
 keybinding:
   universal:
     prevItem: 'k'

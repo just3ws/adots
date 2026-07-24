@@ -2,4 +2,4 @@
 # Apply changes with: cmux reload-config
 font-family = FiraCode Nerd Font
 font-style = Retina
-theme = Dracula
+theme = kanagawa-wave
