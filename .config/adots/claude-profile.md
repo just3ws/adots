@@ -31,3 +31,18 @@ adots untracked because of a missing `.git`.
 - `rtk` proxy for high-output commands (`rtk git diff`, `rtk docker logs`).
 - Check `zdots-ctx query` / `zdots-ctx hydrate` before claiming missing context.
 - `/platform-sync` to verify all four repos before pushing anything.
+
+## RTK (Rust Token Killer)
+
+Token-optimized CLI proxy (60–90% savings). The Claude Code hook rewrites
+simple commands automatically (`git status` → `rtk git status`); inside
+loops/pipelines prefix `rtk` manually. Meta commands are always direct:
+
+```bash
+rtk gain              # savings analytics (--history for per-command)
+rtk discover          # scan CC history for missed opportunities
+rtk proxy <cmd>       # raw passthrough (debugging)
+```
+
+If `rtk gain` errors, the wrong rtk is installed (reachingforthejack/rtk
+name collision) — `which rtk` to verify.
