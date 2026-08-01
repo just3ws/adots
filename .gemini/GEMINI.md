@@ -11,4 +11,4 @@ Mike runs a personal OS ("zdots") across four repos: zdots (`~/.config/zsh`), ad
 
 ## Cross-tool handoffs
 
-Read the most recent file in `~/.config/adots/handoffs/` at the start of a session before assuming context is missing. Before ending a session, or when running low on context, write or append today's handoff file there — see `~/.config/adots/handoffs/README.md` for the format. Shared with Claude Code, Codex CLI, and Antigravity.
+Read the most recent file in `~/.config/adots/handoffs/` at the start of a session before assuming context is missing. Before ending a session, or when running low on context, write or append today's handoff file there — see `~/.config/adots/handoffs/README.md` for the format. Shared with Claude Code, Codex CLI, and Antigravity. Handoff files are local-only and gitignored — never commit them (they routinely carry work-tenant content); only the README is tracked.

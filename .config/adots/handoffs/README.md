@@ -2,6 +2,8 @@
 
 Session-to-session handoff log, shared across every agent/tool working on this machine (Claude Code, Codex CLI, Gemini CLI, Antigravity). One file per session close, named by date.
 
+**Local-only — never commit.** Handoff files routinely carry work-tenant content and are gitignored (`.gitignore`); only this README (and the pre-protocol 2026-06-23 exemplar) is tracked. Do not `git add` them or work around the ignore rule.
+
 ## File naming
 
 `~/.config/adots/handoffs/YYYY-MM-DD.md` — if more than one handoff closes on the same date, append `-2`, `-3`, etc. (`2026-07-24-2.md`).

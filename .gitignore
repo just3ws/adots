@@ -1,2 +1,8 @@
 # CC per-project memory/session dir — never track (guards the work subtree leak purged from history)
 .claude/projects/
+
+# Cross-tool handoffs are local-only session state — may carry work-tenant content.
+# Only the spec (README) and the pre-protocol personal exemplar stay tracked.
+.config/adots/handoffs/*.md
+!.config/adots/handoffs/README.md
+!.config/adots/handoffs/2026-06-23.md
