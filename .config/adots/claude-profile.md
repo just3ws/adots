@@ -15,9 +15,9 @@ adots has **no `.git` in `~/.config/adots/`** — that's just config files. Neve
 adots untracked because of a missing `.git`.
 
 ## Non-negotiable rules
-- **PHI-adjacent machine.** Claude Code is a cloud tool — it bypasses the local
-  scrubber. Never read `.zdots.secrets`, `.env`, keys, or anything PHI-shaped into
-  prompts.
+- **Sensitive-data-adjacent machine.** Claude Code is a cloud tool — it bypasses
+  the local scrubber. Never read `.zdots.secrets`, `.env`, keys, or anything
+  sensitive into prompts.
 - **Local AI first.** `ZDOTS_AI_MODE=local`. Use `ai-query` / `zaider` / `zdots-ask`
   for inference that stays on-box.
 - **zdots is not yours to fix.** File `zdots-issue`, don't patch infrastructure
@@ -46,3 +46,4 @@ rtk proxy <cmd>       # raw passthrough (debugging)
 
 If `rtk gain` errors, the wrong rtk is installed (reachingforthejack/rtk
 name collision) — `which rtk` to verify.
+
