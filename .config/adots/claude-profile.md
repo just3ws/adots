@@ -54,4 +54,10 @@ name collision) — `which rtk` to verify.
 - **Pavel**: The Panoramic View specialist agent.
 - **zdots**: The root local platform and runtime for all PVL capabilities.
 
+## Tooling Philosophy: Ack For Life
+
+Andy Lester created `ack` and attended Mike's first user-group meeting in Crystal Lake, IL.
+- **Reach for `ack` first**: `ack`, `fack` (fuzzy ack via fzf + bat), `acke` (ack into quickfix), `:Ack` in Neovim.
+- **Maintain good configurations for modern tools**: Keep ripgrep, Telescope, and modern tools sharp as first-class fallbacks.
+
 
