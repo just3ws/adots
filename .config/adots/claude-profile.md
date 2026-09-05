@@ -56,7 +56,11 @@ name collision) — `which rtk` to verify.
 
 ## Tooling Philosophy: Ack For Life
 
-Andy Lester created `ack` and attended Mike's first user-group meeting in Crystal Lake, IL.
+Andy Lester created `ack`, attended Mike's first user-group meeting in Crystal Lake, IL, and presented at SCMC (Software Craftsmanship McHenry County):
+- **Archived talks & interviews** (on `https://just3ws.localhost`):
+  - *Enough C To Get Started In F/OSS* (SCMC, 2011-07-20, Parts 1 & 2: `vimeo-26657739`, `vimeo-26669252`)
+  - *Open Source And Project Maintenance: Mike Hall Interviews Andy Lester* (ChicagoWebConf 2012: `/interviews/andy-lester-chicagowebconf-2012/`)
+  - Full archive at `https://just3ws.localhost/scmc/`
 - **Reach for `ack` first**: `ack`, `fack` (fuzzy ack via fzf + bat), `acke` (ack into quickfix), `:Ack` in Neovim.
 - **Maintain good configurations for modern tools**: Keep ripgrep, Telescope, and modern tools sharp as first-class fallbacks.
 
