@@ -1,44 +1,93 @@
-# .ackrc - High-Signal Search Defaults
+# .ackrc - High-Signal Search Defaults (Andy Lester's ack)
 
-# Ignore noise
---ignore-dir=.git
---ignore-dir=.github
---ignore-dir=.hg
---ignore-dir=.svn
---ignore-dir=node_modules
---ignore-dir=dist
---ignore-dir=build
---ignore-dir=target
---ignore-dir=vendor
---ignore-dir=.next
---ignore-dir=.turbo
---ignore-dir=.cache
---ignore-dir=tmp
---ignore-dir=log
---ignore-dir=logs
---ignore-dir=.jekyll-cache
+# Do not wait on stdin if executed non-interactively or in editor subshells
+--nofilter
 
-# Always ignore binary files (Default in modern ack)
-
-# Smart case searching
+# Smart case searching: case-insensitive unless pattern contains uppercase
 --smart-case
 
 # Follow symlinks
 --follow
 
-# Custom Types
+# Ignore version control and dependency directories
+--ignore-dir=.git
+--ignore-dir=.github
+--ignore-dir=.hg
+--ignore-dir=.svn
+--ignore-dir=node_modules
+--ignore-dir=.yarn
+--ignore-dir=.pnpm-store
+--ignore-dir=vendor
+--ignore-dir=.bundle
+
+# Ignore build artifacts, caches, and bundles
+--ignore-dir=dist
+--ignore-dir=build
+--ignore-dir=target
+--ignore-dir=_build
+--ignore-dir=deps
+--ignore-dir=.next
+--ignore-dir=.turbo
+--ignore-dir=.nuxt
+--ignore-dir=.svelte-kit
+--ignore-dir=.output
+--ignore-dir=.cache
+--ignore-dir=.jekyll-cache
+--ignore-dir=tmp
+--ignore-dir=log
+--ignore-dir=logs
+--ignore-dir=coverage
+--ignore-dir=.coverage
+--ignore-dir=.nyc_output
+
+# Ignore language-specific and agent caches
+--ignore-dir=__pycache__
+--ignore-dir=.pytest_cache
+--ignore-dir=.mypy_cache
+--ignore-dir=.ruff_cache
+--ignore-dir=.venv
+--ignore-dir=venv
+--ignore-dir=.terraform
+--ignore-dir=.elixir_ls
+--ignore-dir=.colima
+--ignore-dir=.gemini
+--ignore-dir=.claude
+
+# High-Signal Ignore File Patterns & Minified Assets
+--ignore-file=ext:min.js
+--ignore-file=ext:min.css
+--ignore-file=ext:map
+--ignore-file=ext:bundle.js
+--ignore-file=ext:bundle.css
+--ignore-file=ext:zwc
+--ignore-file=match:/\.DS_Store$/
+--ignore-file=match:/tags$/
+--ignore-file=match:/TAGS$/
+
+# Custom & Enhanced Types
+--type-set=zsh=.zsh,.zsh-theme,.zshenv,.zshrc,.zlogin,.zlogout
+--type-set=bats=.bats
+--type-set=lua=.lua
 --type-set=mermaid=.mmd,.mermaid
---type-set=typescript=.ts,.tsx
+--type-set=typescript=.ts,.tsx,.mts,.cts
+--type-set=javascript=.js,.jsx,.mjs,.cjs
 --type-set=markdown=.md,.markdown,.mdx
 --type-set=css=.css,.scss,.sass,.less
---type-set=json=.json,.jsonl,.lock
+--type-set=json=.json,.jsonl,.json5,.lock
 --type-set=yaml=.yaml,.yml
+--type-set=toml=.toml
 --type-set=rust=.rs
+--type-set=sql=.sql,.psql
+--type-set=proto=.proto
+--type-set=graphql=.graphql,.gql
+--type-set=svelte=.svelte
+--type-set=astro=.astro
+--type-set=vue=.vue
 
-# Visual preferences
+# Visual preferences — Kanagawa Wave palette harmony
 --color
 --color-match=bold yellow
---color-filename=bold green
---color-lineno=bold white
+--color-filename=bold cyan
+--color-lineno=bold magenta
 --heading
 --break
