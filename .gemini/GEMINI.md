@@ -12,3 +12,11 @@ Mike runs a personal OS ("zdots") across four repos: zdots (`~/.config/zsh`), ad
 ## Cross-tool handoffs
 
 Read the most recent file in `~/.config/adots/handoffs/` at the start of a session before assuming context is missing. Before ending a session, or when running low on context, write or append today's handoff file there — see `~/.config/adots/handoffs/README.md` for the format. Shared with Claude Code, Codex CLI, and Antigravity. Handoff files are local-only and gitignored — never commit them (they routinely carry work-tenant content); only the README is tracked.
+
+## Panoramic View Platform Canonical Naming (Permanent)
+
+- **Panoramic View** is a technique: the system-cartography investigation method. It is never an initiative or brand name.
+- **Panoramic View Labs** (short code `PVL`, pronounced "Pavel") is the initiative name and organizational umbrella.
+- **Pavel** is the Panoramic View specialist agent (named from the spoken pronunciation of PVL).
+- **zdots** is the root local-system platform for the Panoramic View initiative and capabilities. All PVL capabilities live in and depend on zdots, not just3ws or wwworkremote.
+

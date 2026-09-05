@@ -47,3 +47,11 @@ rtk proxy <cmd>       # raw passthrough (debugging)
 If `rtk gain` errors, the wrong rtk is installed (reachingforthejack/rtk
 name collision) — `which rtk` to verify.
 
+## Panoramic View Labs (PVL) Platform Identity
+
+- **Panoramic View**: The technique / investigation method (4D system cartography).
+- **Panoramic View Labs (PVL)**: The initiative name and umbrella (spoken "Pavel").
+- **Pavel**: The Panoramic View specialist agent.
+- **zdots**: The root local platform and runtime for all PVL capabilities.
+
+
