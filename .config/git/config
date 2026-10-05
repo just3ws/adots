@@ -67,3 +67,5 @@
 	pretty = %C(yellow)%h%C(auto)%d %s %C(dim)%an, %ar%Creset
 [log]
 	date = relative
+[safe]
+	directory = /app
