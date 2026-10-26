@@ -13,8 +13,9 @@ Mike runs a personal OS ("zdots") across four repos: zdots (`~/.config/zsh`), ad
 
 Read the most recent file in `~/.config/adots/handoffs/` at the start of a session before assuming context is missing. Before ending a session, or when running low on context, write or append today's handoff file there — see `~/.config/adots/handoffs/README.md` for the format. Shared with Claude Code, Codex CLI, and Antigravity. Handoff files are local-only and gitignored — never commit them (they routinely carry work-tenant content); only the README is tracked.
 
-## Panoramic View Platform Canonical Naming (Permanent)
+## Canonical Entity Naming & Ecosystem Ground Truth
 
+- **SCMC** is strictly **Software Craftsmanship McHenry County**. It is NEVER "Software Craftsmanship Movement", "Software Craftsmanship Meetup", "Software Craftsmanship Midwest", "Supply Chain Management", or anything else. Mike Hall co-founded SCMC in late 2009 with Ryan Gerry and Jim Suchy (following the October 2009 SCNA table meeting with Ryan Gerry that launched CDG in McHenry County libraries, Panera Bread, and Duke's Alehouse), hosted at Follett Software Company in McHenry, IL.
 - **Panoramic View** is a technique: the system-cartography investigation method. It is never an initiative or brand name.
 - **Panoramic View Labs** (short code `PVL`, pronounced "Pavel") is the initiative name and organizational umbrella.
 - **Pavel** is the Panoramic View specialist agent (named from the spoken pronunciation of PVL).
