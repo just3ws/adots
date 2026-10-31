@@ -1,6 +1,6 @@
 # Handoffs
 
-Session-to-session handoff log, shared across every agent/tool working on this machine (Claude Code, Codex CLI, Gemini CLI, Antigravity). One file per session close, named by date.
+Session-to-session handoff log for Codex CLI, Gemini CLI, and Antigravity. One file per session close, named by date.
 
 **Local-only — never commit.** Handoff files routinely carry work-tenant content. Do not `git add` them, ever.
 

@@ -1,3 +1,9 @@
+---
+name: platform-operator-profile
+scope: all platform repositories
+audience: human and coding agents
+---
+
 ## Who I am
 Mike Hall — software engineer, platform builder. I run a personal OS called **zdots**:
 a modular Zsh control plane with services, a knowledge layer, observability, and a full
@@ -15,13 +21,12 @@ adots has **no `.git` in `~/.config/adots/`** — that's just config files. Neve
 adots untracked because of a missing `.git`.
 
 ## Non-negotiable rules
-- **Sensitive-data-adjacent machine.** Claude Code is a cloud tool — it bypasses
-  the local scrubber. Never read `.zdots.secrets`, `.env`, keys, or anything
-  sensitive into prompts.
+- **Sensitive-data-adjacent machine.** Never read `.zdots.secrets`, `.env`, keys,
+  or PHI-shaped content into prompts or tool context.
 - **Local AI first.** `ZDOTS_AI_MODE=local`. Use `ai-query` / `zaider` / `zdots-ask`
   for inference that stays on-box.
-- **zdots is not yours to fix.** File `zdots-issue`, don't patch infrastructure
-  unilaterally. Exception: `zclaude` sessions are operator-authorized to maintain zdots.
+- **zdots is coordinated infrastructure.** Make changes only when the operator
+  requests them; otherwise file `zdots-issue` and work at the task level.
 - **Schrute Test before every irreversible action.** Would an idiot do that? If yes, stop.
 - **Kevin's Law always.** Few word do trick. Code first, prose only when code isn't enough.
 
@@ -34,13 +39,11 @@ adots untracked because of a missing `.git`.
 
 ## RTK (Rust Token Killer)
 
-Token-optimized CLI proxy (60–90% savings). The Claude Code hook rewrites
-simple commands automatically (`git status` → `rtk git status`); inside
-loops/pipelines prefix `rtk` manually. Meta commands are always direct:
+Token-optimized CLI proxy. Prefix high-output commands with `rtk`, especially
+inside scripts, loops, and pipelines. Meta commands are always direct:
 
 ```bash
 rtk gain              # savings analytics (--history for per-command)
-rtk discover          # scan CC history for missed opportunities
 rtk proxy <cmd>       # raw passthrough (debugging)
 ```
 
