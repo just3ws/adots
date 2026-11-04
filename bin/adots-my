@@ -22,8 +22,8 @@ Validate the safe ~/my directory skeleton without mutating files.
 This is the Rails-style migration-status check for the private my system.
 
 Commands:
-  doctor                  Read-only status check for the ~/my contract
-  prepare                 Create the safe active skeleton and templates
+  doctor                  Check the ~/my contract and Astronomicon epoch
+  prepare                 Create the safe skeleton, templates, and epoch marker
   migrate                 Move legacy roots into ~/my/.archive with a note
 
 Options:
@@ -31,7 +31,7 @@ Options:
   --strict-public-vault   Treat a missing vaults/public directory as a failure
   --dry-run               Preview prepare/migrate actions without writing
   --apply                 Apply prepare/migrate actions
-  --json                  Emit machine-readable JSON
+  --json                  Emit JSON with contract_version and platform_version
   -q, --quiet             Suppress passing checks
   -h, --help              Show this help
 
@@ -51,6 +51,7 @@ json_escape() {
 MY_ROOT="${ADOTS_MY_ROOT:-${MY_HOME:-$HOME/my}}"
 STRUCTURE_CONTRACT_VERSION="my.structure.v1"
 STRUCTURE_MIGRATION_VERSION="my.structure.migration.v1"
+MY_PLATFORM_VERSION=""
 EXPECTED_MY_REMOTE="github.com/just3ws/my"
 QUIET=0
 JSON_MODE=0
@@ -163,6 +164,11 @@ ensure_file_state() {
 }
 
 ensure_my_skeleton() {
+  local beacon_file="${ZDOTDIR:-$HOME/.config/zsh}/VERSION"
+  if [[ -r "$beacon_file" ]]; then
+    ensure_file_state "$MY_ROOT/VERSION" "$(tr -d '[:space:]' < "$beacon_file")"
+  fi
+
   ensure_dir_state "$MY_ROOT/.archive" "$MY_ROOT/.archive"
   ensure_dir_state "$MY_ROOT/config" "$MY_ROOT/config"
   ensure_dir_state "$MY_ROOT/docs" "$MY_ROOT/docs"
@@ -461,6 +467,11 @@ emit_json() {
   printf '{'
   printf '"status":"%s",' "$status"
   printf '"contract_version":"%s",' "$(json_escape "$STRUCTURE_CONTRACT_VERSION")"
+  if [[ -n "$MY_PLATFORM_VERSION" ]]; then
+    printf '"platform_version":"%s",' "$(json_escape "$MY_PLATFORM_VERSION")"
+  else
+    printf '"platform_version":null,'
+  fi
   printf '"expected_remote":"%s",' "$(json_escape "$EXPECTED_MY_REMOTE")"
   printf '"my_root":"%s",' "$(json_escape "$MY_ROOT")"
   printf '"passed":%d,' "$passes"
@@ -487,6 +498,17 @@ emit_json() {
 
 doctor() {
   [[ "$JSON_MODE" -eq 1 ]] || printf 'adots-my: checking %s (%s)\n' "$MY_ROOT" "$STRUCTURE_CONTRACT_VERSION"
+
+  if [[ -r "$MY_ROOT/VERSION" ]]; then
+    MY_PLATFORM_VERSION="$(tr -d '[:space:]' < "$MY_ROOT/VERSION")"
+    if [[ "$MY_PLATFORM_VERSION" =~ ^[0-9]{7}\.M[1-9]$ ]]; then
+      record ok "Astronomicon platform epoch" "$MY_ROOT/VERSION" "$MY_PLATFORM_VERSION"
+    else
+      record warn "invalid Astronomicon platform epoch" "$MY_ROOT/VERSION" "$MY_PLATFORM_VERSION"
+    fi
+  else
+    record warn "Astronomicon platform epoch missing" "$MY_ROOT/VERSION" "run adots-my prepare --apply"
+  fi
 
   record ok "structure contract" "$STRUCTURE_CONTRACT_VERSION"
   check_contract_declaration

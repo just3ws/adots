@@ -8,7 +8,7 @@
 # Commands:
 #   adots sync               pull from remote (fast-forward only), report HEAD
 #   adots sync --status      report behind/ahead vs upstream without pulling
-#   adots status             show modified tracked files (short form)
+#   adots status             show modified files and Astronomicon epoch
 #   adots status --verbose   full status plus a diff of modified files
 #   adots push               push committed changes to the remote
 set -euo pipefail
@@ -41,6 +41,9 @@ case "$cmd" in
     fi
     ;;
   status)
+    if [[ -r "$HOME/VERSION" ]]; then
+      info "Astronomicon epoch $(tr -d '[:space:]' < "$HOME/VERSION")"
+    fi
     if [[ "${1:-}" == "--verbose" ]]; then
       repo_git status
       repo_git diff
