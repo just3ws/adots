@@ -1,0 +1,26 @@
+# Digital Patina & Editorial Craft: Light Paper Canvas Theme
+# Derived from canonical _sass/_p_variables.scss and Chromium Craftsman tokens.
+
+palette = 0=#faf8f5
+palette = 1=#c81d25
+palette = 2=#0f766e
+palette = 3=#b45309
+palette = 4=#1d4ed8
+palette = 5=#7c3aed
+palette = 6=#0d9488
+palette = 7=#1e232a
+palette = 8=#64748b
+palette = 9=#dc2626
+palette = 10=#059669
+palette = 11=#d97706
+palette = 12=#2563eb
+palette = 13=#9333ea
+palette = 14=#14b8a6
+palette = 15=#0f172a
+
+background = #faf8f5
+foreground = #1e232a
+cursor-color = #0f766e
+cursor-text = #faf8f5
+selection-background = #e3dfd7
+selection-foreground = #0f172a

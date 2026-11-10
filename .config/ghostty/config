@@ -1,5 +1,28 @@
-# Ghostty config — read by cmux's embedded terminal.
-# Apply changes with: cmux reload-config
-font-family = FiraCode Nerd Font
+# Ghostty Broadcast Terminal Configuration
+# High-contrast, tear-free Metal rendering optimized for OBS streaming and video capture.
+# Aligned to the canonical Craftsmanship theme contract (Digital Patina & Editorial Craft).
+
+font-family = FiraCode Nerd Font Mono
 font-style = Retina
-theme = kanagawa-wave
+font-size = 18
+adjust-cell-height = 10%
+
+# Theme: canonical Craftsmanship broadcast palette (obs/iterm2/the-sound-above.json)
+# Switch to 'craftsmanship-light' if doing daytime paper-canvas presentations.
+theme = craftsmanship
+
+# Window Geometry and Padding (comfortable framing in OBS window capture)
+window-padding-x = 16
+window-padding-y = 14
+window-padding-balance = true
+macos-titlebar-style = transparent
+
+# Rendering and Frame Pacing
+window-vsync = true
+
+# Cursor (solid block avoids video frame-rate beat frequency / flicker)
+cursor-style = block
+cursor-style-blink = false
+
+# Mouse and Scroll
+mouse-hide-while-typing = true

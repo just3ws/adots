@@ -1,0 +1,27 @@
+# The Sound Above & Studio Workbench: Craftsmanship Broadcast Theme
+# Derived from canonical Digital Patina & Editorial Craft tokens (_sass/_p_variables.scss,
+# obs/overlays/css/craftsmanship-theme.css, and obs/iterm2/the-sound-above.json).
+
+palette = 0=#090618
+palette = 1=#c34043
+palette = 2=#76946a
+palette = 3=#c0a36e
+palette = 4=#7e9cd8
+palette = 5=#957fb8
+palette = 6=#6a9589
+palette = 7=#c8c093
+palette = 8=#727169
+palette = 9=#e82424
+palette = 10=#98bb6c
+palette = 11=#e6c384
+palette = 12=#7fb4ca
+palette = 13=#938aa9
+palette = 14=#7aa89f
+palette = 15=#dcd7ba
+
+background = #1a1b2f
+foreground = #dcd7ba
+cursor-color = #dcd7ba
+cursor-text = #1a1b2f
+selection-background = #2d4f67
+selection-foreground = #dcd7ba
