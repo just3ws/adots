@@ -38,6 +38,13 @@ warn() { warnings=$((warnings + 1)); printf 'adots-doctor: WARN %s\n' "$*" >&2; 
 fail() { failures=$((failures + 1)); printf 'adots-doctor: FAIL %s\n' "$*" >&2; }
 note_fix() { [[ "$FIX" -eq 1 ]] && info "fix: $*"; }
 
+# Machine profile recorded by adots-profile (home | work | powerstation).
+active_profile() {
+  local file="${ADOTS_PROFILE_FILE:-${ADOTS_CONFIG_DIR:-$HOME/.config/adots}/profile}"
+  [[ -f "$file" ]] && head -n1 "$file" | tr -d '[:space:]'
+  return 0
+}
+
 repo_git() {
   git --git-dir="$HOME_GIT_DIR" --work-tree="$HOME" "$@"
 }
@@ -108,6 +115,12 @@ ensure_xdg_root_pair() {
     local canonical_target
     canonical_target="$(readlink "$canonical")"
     if [[ "$canonical_target" == "$legacy" ]]; then
+      # On a managed work machine the employer provisions the legacy root; the
+      # XDG path is an alias to it, not drift to migrate.
+      if [[ "$(active_profile)" == "work" && -d "$legacy" && ! -L "$legacy" ]]; then
+        info "ok: $canonical_rel aliases the employer-managed $legacy_rel (work profile)"
+        return 0
+      fi
       if [[ "$FIX" -ne 1 ]]; then
         fail "$canonical_rel points at the legacy root $legacy_rel"
         return 1
@@ -199,6 +212,21 @@ ensure_symlink() {
 
   ln -s "$target" "$path"
   info "linked $rel -> $target"
+}
+
+# A managed work machine keeps the employer's ~/.zshenv (its setup script checks
+# the file's own lines) and hands off to zdots with one uncommented line:
+#   [ -r "$HOME/.config/zsh/.zshenv" ] && source "$HOME/.config/zsh/.zshenv"
+# --fix must never replace that file with the symlink.
+ensure_zshenv_entrypoint() {
+  local path="$HOME/.zshenv"
+  # shellcheck disable=SC2016  # the bridge line carries a literal $HOME
+  if [[ "$(active_profile)" == "work" && -f "$path" && ! -L "$path" ]] \
+    && grep -v '^[[:space:]]*#' "$path" | grep -Fq 'source "$HOME/.config/zsh/.zshenv"'; then
+    info "ok: .zshenv hands off to zdots (managed work machine)"
+    return 0
+  fi
+  ensure_symlink ".zshenv" "$ZDOTDIR/.zshenv"
 }
 
 ensure_tracked_file() {
@@ -331,7 +359,7 @@ done
 info "checking entrypoint layout"
 ensure_symlink ".bash_profile" "$ZDOTDIR/bash_profile"
 ensure_symlink ".bashrc" "$ZDOTDIR/bashrc"
-ensure_symlink ".zshenv" "$ZDOTDIR/.zshenv"
+ensure_zshenv_entrypoint
 
 info "checking tracked adots files"
 for rel in \
