@@ -249,16 +249,26 @@ would stop meeting.
   client is a detach, so iTerm2 doesn't prompt — it still prompts for anything else.
 * Left Option sends Meta (`prefix + M-y`); right Option types characters.
 
-**Setup:** make it the default via *Settings › Profiles › zdots tmux
-(Craftsmanship) › Other Actions… › Set as Default*. Edit the JSON, not the
-Settings UI (dynamic profiles are read-only there; don't mark them rewritable).
-The font comes from the `font-fira-code-nerd-font` cask. If iTerm2 shows Menlo,
-macOS hasn't activated the cask's fonts — install them with Font Book (or
-CoreText user-scope registration).
+**Setup** — global iTerm2 settings the profiles can't carry, set once in the UI:
+1. Make durable sessions the default: *Settings › Profiles › zdots tmux
+   (Craftsmanship) › Other Actions… › Set as Default*.
+2. Don't hand the window-activating click to the program: *Settings › Advanced*,
+   search **first mouse**, and set "always accept first mouse event" to **No**
+   (`AlwaysAcceptFirstMouse = false`). With mouse reporting on (tmux `mouse on`,
+   TUIs such as Claude Code's prompts), the click that brings a window forward
+   otherwise lands on whatever is under the pointer — selecting a menu option or
+   a pane you only meant to focus.
+
+Edit the JSON, not the Settings UI (dynamic profiles are read-only there; don't
+mark them rewritable). The font comes from the `font-fira-code-nerd-font` cask.
+If iTerm2 shows Menlo, macOS hasn't activated the cask's fonts — install them
+with Font Book (or CoreText user-scope registration).
 
 **Verify:**
 ```bash
 tmux ls                                   # the main session survives closed tabs
 tmux show-environment -g TMUX_PLUGIN_MANAGER_PATH
 printf '%s\n' "$TERM" "$TERM_PROGRAM" "$SSH_AUTH_SOCK"   # inside a pane
+defaults read com.googlecode.iterm2 AlwaysAcceptFirstMouse            # 0
+defaults read com.googlecode.iterm2 'Default Bookmark Guid'           # the tmux profile's Guid
 ```
