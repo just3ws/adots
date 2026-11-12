@@ -222,7 +222,10 @@ status bar, popups and the OSC passthrough this setup relies on). Two Dynamic
 Profiles, tracked at
 `~/Library/Application Support/iTerm2/DynamicProfiles/zdots-craftsmanship.json`,
 derive from the Ghostty theme and config (Craftsmanship palette, FiraCode Nerd
-Font Mono Retina 18, +10% line height, block cursor):
+Font Mono Retina 18, block cursor). Line height stays at 100% with iTerm2's
+built-in Powerline glyphs: unlike Ghostty's `adjust-cell-height`, iTerm2 adds
+extra spacing *between* lines, so prompt/status segments and box-drawing lines
+would stop meeting.
 
 | Profile | Starts | Use |
 |---|---|---|
