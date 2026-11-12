@@ -366,6 +366,13 @@ check_contract_declaration() {
   fi
 }
 
+# Machine profile recorded by adots-profile (home | work | powerstation).
+active_profile() {
+  local file="${ADOTS_PROFILE_FILE:-${ADOTS_CONFIG_DIR:-$HOME/.config/adots}/profile}"
+  [[ -f "$file" ]] && head -n1 "$file" | tr -d '[:space:]'
+  return 0
+}
+
 is_expected_my_remote() {
   local remote_url="$1"
   case "$remote_url" in
@@ -421,6 +428,19 @@ check_my_remote() {
   local path="$1"
   local remote_url
   remote_url="$(git -C "$path" config --get remote.origin.url 2>/dev/null || true)"
+
+  # A work machine keeps a separate, work-local ~/my: no remote is the expected
+  # state there, and the personal vault must never be wired in.
+  if [[ "$(active_profile)" == "work" ]]; then
+    if [[ -z "$remote_url" ]]; then
+      record ok "~/my is work-local (no origin remote)" "$path"
+    elif is_expected_my_remote "$remote_url"; then
+      record fail "~/my points at the personal vault on a work machine" "$remote_url" "remove the origin remote"
+    else
+      record ok "~/my origin is a work remote" "$remote_url"
+    fi
+    return
+  fi
 
   if [[ -z "$remote_url" ]]; then
     record fail "~/my origin remote missing" "$path" "expected $EXPECTED_MY_REMOTE"
