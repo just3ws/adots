@@ -24,10 +24,9 @@ Temporary Items
 apdisk
 
 # Common dev noise
+# Build output dirs (dist/, build/, target/) belong in each project's own
+# .gitignore: a global rule also hides source dirs that share those names.
 node_modules/
-dist/
-build/
-target/
 .cache/
 .next/
 .turbo/
