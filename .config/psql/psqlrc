@@ -2,19 +2,28 @@
 -- Canonical location: $XDG_CONFIG_HOME/psql/psqlrc (selected via $PSQLRC).
 -- History lives at $PSQL_HISTORY ($XDG_STATE_HOME/psql/history).
 
--- 0. UI & aesthetics
 \set QUIET 1
+
+-- Output styling is for people only. Scripts (psql -c / -f, or SQL on stdin)
+-- parse psql's output, so they get it plain: no borders, no NULL glyph, no
+-- "Time:" lines, no banner. psql exposes no interactivity flag, so ask the
+-- shell: stdin is a terminal and the command line carries no -c / -f.
+\set zd_interactive `[ -t 0 ] && ! ps -o args= -p "$PPID" | grep -qE -- '(^| )(-[A-Za-z]*[cf]|--command|--file)( |=|$)' && echo on || echo off`
+
+-- 0. UI & aesthetics
+\if :zd_interactive
 \pset border 2
 \pset linestyle unicode
 \pset unicode_border_linestyle single
 \pset unicode_column_linestyle single
 \pset unicode_header_linestyle double
 \pset null '∅'
+\timing on
+\endif
 
 -- 1. Behavior
 \set ON_ERROR_ROLLBACK interactive
 \set COMP_KEYWORD_CASE upper
-\timing on
 
 -- 2. Prompt: [user@host:db] [txn_status] >
 -- Color codes are the project palette; do not name the theme here.
@@ -23,4 +32,7 @@
 
 -- 3. Development shortcuts
 \unset QUIET
+\if :zd_interactive
 \echo 'psql ready.'
+\endif
+\unset zd_interactive
