@@ -16,6 +16,9 @@ automatically as part of that process.
 
 ## Work-machine restore
 
+> [!TIP]
+> For the end-to-end AI agent playbook that safely evaluates, reconciles, and migrates `adots`, `zdots`, and `vdots` onto a corporate machine (preserving existing IT setups, 1Password, Postgres 17, Colima, and mise), see the **[Work Machine Migration Playbook](~/.config/zsh/docs/work-migration-playbook.md)** in the `zdots` repository.
+
 On a managed machine, restore the minimal safe set first and let the doctor
 guide the rest:
 

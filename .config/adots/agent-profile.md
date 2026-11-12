@@ -29,6 +29,7 @@ adots untracked because of a missing `.git`.
   requests them; otherwise file `zdots-issue` and work at the task level.
 - **Schrute Test before every irreversible action.** Would an idiot do that? If yes, stop.
 - **Kevin's Law always.** Few word do trick. Code first, prose only when code isn't enough.
+- **Work vs Open-Source Delineation.** On work machines, keep personal platform repos (`zdots`, `adots`, `vdots`) strictly delineated from corporate repos. Platform commits must never carry corporate emails (`@company.com`), tenant secrets, or internal identifiers. Corporate repos must never carry `mike@just3ws.com`. Scoped automatically via `~/.config/git/config`. Verify with `git config user.email` before committing. Keep tweaks minimal on work hardware.
 
 ## Working style
 - Ponytail mode default: shortest diff that works, stdlib before abstraction, YAGNI.
