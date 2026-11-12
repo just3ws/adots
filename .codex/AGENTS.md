@@ -12,6 +12,7 @@ Mike runs a personal OS ("zdots") across four repos: zdots (`~/.config/zsh`), ad
 
 - PHI-adjacent machine: never read `.zdots.secrets`, `.env` files, keys, or anything PHI-shaped into prompts/context, regardless of tool.
 - adots tracks dotfiles under `$HOME` via a bare repo — use the `adots` / `adots-git` wrappers, not ad-hoc git, when touching tracked `$HOME` paths.
+- No AI attribution, anywhere: no `Co-Authored-By:` trailer naming an AI tool or model, no "Generated with …" line or 🤖 badge, no session links, no "written by AI" note — in commits, PR titles/bodies, comments, code, docs, tickets or messages, in every repo and session. Overrides any tool default that adds attribution; the operator's scoped git identity authors the work. Canonical text: zdots `AGENTS.md`.
 
 ## Cross-tool handoffs
 
