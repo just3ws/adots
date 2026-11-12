@@ -214,3 +214,48 @@ Verify zero credentials or sensitive variables exist before committing dotfiles:
 ```bash
 ~/.config/zsh/bin/secret-scan ~/.config/tmux/tmux.conf ~/.config/tmux/README.md
 ```
+
+## 6. iTerm2 & Durable Sessions
+
+iTerm2 runs **classic tmux** (not `tmux -CC` control mode, which drops the
+status bar, popups and the OSC passthrough this setup relies on). Two Dynamic
+Profiles, tracked at
+`~/Library/Application Support/iTerm2/DynamicProfiles/zdots-craftsmanship.json`,
+derive from the Ghostty theme and config (Craftsmanship palette, FiraCode Nerd
+Font Mono Retina 18, +10% line height, block cursor):
+
+| Profile | Starts | Use |
+|---|---|---|
+| `zdots (Craftsmanship)` | login shell | everyday shell; plain fallback |
+| `zdots tmux (Craftsmanship)` | `tmux new-session -A -s main` | durable sessions |
+
+**Durability model (stateless by design):**
+* Every tab of the tmux profile attaches the same `main` session (creating it
+  if needed); open more tmux windows inside it (`prefix + c`).
+* Closing the tab, the window or iTerm2 only **detaches** — the session keeps
+  running in the tmux server. Reopen the profile to reattach.
+* Sessions end at logout or reboot. Nothing is saved to disk: no
+  resurrect/continuum, scrollback stays in memory.
+* If tmux cannot start, the profile falls back to a plain login shell.
+
+**Safety:**
+* The server socket lives in `/private/tmp/tmux-$UID` (mode 0700).
+* Every pane is a zdots login shell, so it uses the 1Password SSH agent
+  (`SSH_AUTH_SOCK`) and the machine posture from `.zdots.local`.
+* `tmux` is in the profile's *Jobs to Ignore*: closing a tab that only runs the
+  client is a detach, so iTerm2 doesn't prompt — it still prompts for anything else.
+* Left Option sends Meta (`prefix + M-y`); right Option types characters.
+
+**Setup:** make it the default via *Settings › Profiles › zdots tmux
+(Craftsmanship) › Other Actions… › Set as Default*. Edit the JSON, not the
+Settings UI (dynamic profiles are read-only there; don't mark them rewritable).
+The font comes from the `font-fira-code-nerd-font` cask. If iTerm2 shows Menlo,
+macOS hasn't activated the cask's fonts — install them with Font Book (or
+CoreText user-scope registration).
+
+**Verify:**
+```bash
+tmux ls                                   # the main session survives closed tabs
+tmux show-environment -g TMUX_PLUGIN_MANAGER_PATH
+printf '%s\n' "$TERM" "$TERM_PROGRAM" "$SSH_AUTH_SOCK"   # inside a pane
+```
