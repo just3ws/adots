@@ -15,16 +15,20 @@
 [includeIf "hasconfig:remote.*.url:git@work.gitlab.com:*"]
 	path = ~/.config/git/config.identity.work
 
-# Automatic personal identity scoping for just3ws repositories (SSH and HTTPS):
+# Automatic personal identity scoping for just3ws repositories (SSH and HTTPS).
+# hasconfig globs are path globs: `*` stops at `/` and only `/**` spans them, so
+# the HTTPS form needs its scheme spelled out.
 [includeIf "hasconfig:remote.*.url:*github.com:just3ws/*"]
 	path = ~/.config/git/config.identity.home
-[includeIf "hasconfig:remote.*.url:*github.com/just3ws/*"]
+[includeIf "hasconfig:remote.*.url:https://github.com/just3ws/**"]
 	path = ~/.config/git/config.identity.home
 
 # Directory-based fallback guarantees for platform repositories:
 [includeIf "gitdir:~/.config/zsh/"]
 	path = ~/.config/git/config.identity.home
-[includeIf "gitdir:~/.homegit/"]
+# No trailing slash: adots is a bare repo, so its git dir IS ~/.homegit
+# (a trailing slash would only match paths below it).
+[includeIf "gitdir:~/.homegit"]
 	path = ~/.config/git/config.identity.home
 [includeIf "gitdir:~/.config/nvim/"]
 	path = ~/.config/git/config.identity.home
