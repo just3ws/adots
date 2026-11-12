@@ -1,0 +1,216 @@
+{
+  "Profiles": [
+    {
+      "Name": "zdots (Craftsmanship)",
+      "Guid": "8303DA53-8C0D-446A-B08C-79C326B7FAAB",
+      "Tags": [
+        "zdots"
+      ],
+      "Normal Font": "FiraCodeNFM-Ret 18",
+      "Non Ascii Font": "FiraCodeNFM-Ret 18",
+      "Use Non-ASCII Font": false,
+      "Vertical Spacing": 1.1,
+      "Horizontal Spacing": 1.0,
+      "Cursor Type": 2,
+      "Blinking Cursor": false,
+      "Use Bright Bold": false,
+      "Scrollback Lines": 100000,
+      "TerminalMargin": 16,
+      "TerminalVMargin": 14,
+      "Load Shell Integration Automatically": false,
+      "Use Separate Colors for Light and Dark Mode": false,
+      "Terminal Type": "xterm-256color",
+      "Custom Command": "No",
+      "Custom Directory": "No",
+      "Background Color": {
+        "Red Component": 0.10196078431372549,
+        "Green Component": 0.10588235294117647,
+        "Blue Component": 0.1843137254901961,
+        "Alpha Component": 1,
+        "Color Space": "sRGB"
+      },
+      "Foreground Color": {
+        "Red Component": 0.8627450980392157,
+        "Green Component": 0.8431372549019608,
+        "Blue Component": 0.7294117647058823,
+        "Alpha Component": 1,
+        "Color Space": "sRGB"
+      },
+      "Bold Color": {
+        "Red Component": 0.8627450980392157,
+        "Green Component": 0.8431372549019608,
+        "Blue Component": 0.7294117647058823,
+        "Alpha Component": 1,
+        "Color Space": "sRGB"
+      },
+      "Cursor Color": {
+        "Red Component": 0.8627450980392157,
+        "Green Component": 0.8431372549019608,
+        "Blue Component": 0.7294117647058823,
+        "Alpha Component": 1,
+        "Color Space": "sRGB"
+      },
+      "Cursor Text Color": {
+        "Red Component": 0.10196078431372549,
+        "Green Component": 0.10588235294117647,
+        "Blue Component": 0.1843137254901961,
+        "Alpha Component": 1,
+        "Color Space": "sRGB"
+      },
+      "Selection Color": {
+        "Red Component": 0.17647058823529413,
+        "Green Component": 0.30980392156862746,
+        "Blue Component": 0.403921568627451,
+        "Alpha Component": 1,
+        "Color Space": "sRGB"
+      },
+      "Selected Text Color": {
+        "Red Component": 0.8627450980392157,
+        "Green Component": 0.8431372549019608,
+        "Blue Component": 0.7294117647058823,
+        "Alpha Component": 1,
+        "Color Space": "sRGB"
+      },
+      "Link Color": {
+        "Red Component": 0.49411764705882355,
+        "Green Component": 0.611764705882353,
+        "Blue Component": 0.8470588235294118,
+        "Alpha Component": 1,
+        "Color Space": "sRGB"
+      },
+      "Ansi 0 Color": {
+        "Red Component": 0.03529411764705882,
+        "Green Component": 0.023529411764705882,
+        "Blue Component": 0.09411764705882353,
+        "Alpha Component": 1,
+        "Color Space": "sRGB"
+      },
+      "Ansi 1 Color": {
+        "Red Component": 0.7647058823529411,
+        "Green Component": 0.25098039215686274,
+        "Blue Component": 0.2627450980392157,
+        "Alpha Component": 1,
+        "Color Space": "sRGB"
+      },
+      "Ansi 2 Color": {
+        "Red Component": 0.4627450980392157,
+        "Green Component": 0.5803921568627451,
+        "Blue Component": 0.41568627450980394,
+        "Alpha Component": 1,
+        "Color Space": "sRGB"
+      },
+      "Ansi 3 Color": {
+        "Red Component": 0.7529411764705882,
+        "Green Component": 0.6392156862745098,
+        "Blue Component": 0.43137254901960786,
+        "Alpha Component": 1,
+        "Color Space": "sRGB"
+      },
+      "Ansi 4 Color": {
+        "Red Component": 0.49411764705882355,
+        "Green Component": 0.611764705882353,
+        "Blue Component": 0.8470588235294118,
+        "Alpha Component": 1,
+        "Color Space": "sRGB"
+      },
+      "Ansi 5 Color": {
+        "Red Component": 0.5843137254901961,
+        "Green Component": 0.4980392156862745,
+        "Blue Component": 0.7215686274509804,
+        "Alpha Component": 1,
+        "Color Space": "sRGB"
+      },
+      "Ansi 6 Color": {
+        "Red Component": 0.41568627450980394,
+        "Green Component": 0.5843137254901961,
+        "Blue Component": 0.5372549019607843,
+        "Alpha Component": 1,
+        "Color Space": "sRGB"
+      },
+      "Ansi 7 Color": {
+        "Red Component": 0.7843137254901961,
+        "Green Component": 0.7529411764705882,
+        "Blue Component": 0.5764705882352941,
+        "Alpha Component": 1,
+        "Color Space": "sRGB"
+      },
+      "Ansi 8 Color": {
+        "Red Component": 0.4470588235294118,
+        "Green Component": 0.44313725490196076,
+        "Blue Component": 0.4117647058823529,
+        "Alpha Component": 1,
+        "Color Space": "sRGB"
+      },
+      "Ansi 9 Color": {
+        "Red Component": 0.9098039215686274,
+        "Green Component": 0.1411764705882353,
+        "Blue Component": 0.1411764705882353,
+        "Alpha Component": 1,
+        "Color Space": "sRGB"
+      },
+      "Ansi 10 Color": {
+        "Red Component": 0.596078431372549,
+        "Green Component": 0.7333333333333333,
+        "Blue Component": 0.4235294117647059,
+        "Alpha Component": 1,
+        "Color Space": "sRGB"
+      },
+      "Ansi 11 Color": {
+        "Red Component": 0.9019607843137255,
+        "Green Component": 0.7647058823529411,
+        "Blue Component": 0.5176470588235295,
+        "Alpha Component": 1,
+        "Color Space": "sRGB"
+      },
+      "Ansi 12 Color": {
+        "Red Component": 0.4980392156862745,
+        "Green Component": 0.7058823529411765,
+        "Blue Component": 0.792156862745098,
+        "Alpha Component": 1,
+        "Color Space": "sRGB"
+      },
+      "Ansi 13 Color": {
+        "Red Component": 0.5764705882352941,
+        "Green Component": 0.5411764705882353,
+        "Blue Component": 0.6627450980392157,
+        "Alpha Component": 1,
+        "Color Space": "sRGB"
+      },
+      "Ansi 14 Color": {
+        "Red Component": 0.47843137254901963,
+        "Green Component": 0.6588235294117647,
+        "Blue Component": 0.6235294117647059,
+        "Alpha Component": 1,
+        "Color Space": "sRGB"
+      },
+      "Ansi 15 Color": {
+        "Red Component": 0.8627450980392157,
+        "Green Component": 0.8431372549019608,
+        "Blue Component": 0.7294117647058823,
+        "Alpha Component": 1,
+        "Color Space": "sRGB"
+      }
+    },
+    {
+      "Name": "zdots tmux (Craftsmanship)",
+      "Guid": "0CFA39E3-8680-486C-AA70-C025DAE3CFFB",
+      "Dynamic Profile Parent Name": "zdots (Craftsmanship)",
+      "Tags": [
+        "zdots",
+        "tmux"
+      ],
+      "Custom Command": "Yes",
+      "Command": "/bin/zsh -lc 'tmux new-session -A -s main || exec /bin/zsh -l'",
+      "Option Key Sends": 2,
+      "Right Option Key Sends": 0,
+      "Prompt Before Closing 2": 2,
+      "Jobs to Ignore": [
+        "rlogin",
+        "ssh",
+        "slogin",
+        "telnet",
+        "tmux"
+      ]
+    }
+  ]
+}
