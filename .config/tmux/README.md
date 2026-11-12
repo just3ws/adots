@@ -259,8 +259,13 @@ would stop meeting.
    otherwise lands on whatever is under the pointer — selecting a menu option or
    a pane you only meant to focus.
 
-Edit the JSON, not the Settings UI (dynamic profiles are read-only there; don't
-mark them rewritable). The font comes from the `font-fira-code-nerd-font` cask.
+Edit the JSON, not the Settings UI. If iTerm2 shows "Changes Will Be Lost",
+choose **Cancel** — never *Mark as Rewritable*: iTerm2's rewrite drops the tmux
+profile's `Command` and `Dynamic Profile Parent Name` (it doesn't round-trip
+inherited profiles), leaving a tmux profile with no command and no theme. If
+that happens, restore the tracked file:
+`adots-git restore -- "Library/Application Support/iTerm2/DynamicProfiles/zdots-craftsmanship.json"`.
+The font comes from the `font-fira-code-nerd-font` cask.
 If iTerm2 shows Menlo, macOS hasn't activated the cask's fonts — install them
 with Font Book (or CoreText user-scope registration).
 
