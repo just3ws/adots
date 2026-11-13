@@ -6,3 +6,8 @@
 .config/adots/handoffs/*.md
 !.config/adots/handoffs/README.md
 !.config/adots/handoffs/2026-06-23.md
+
+# Machine-local git identity and signing — may carry an employer email or key.
+.config/git/config.identity
+.config/git/config.signing
+.config/git/allowed_signers

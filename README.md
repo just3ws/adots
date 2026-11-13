@@ -104,6 +104,11 @@ The repo is configured with `status.showUntrackedFiles=no`, so normal status
 does not flood the terminal with the entire home directory. Add new files
 explicitly when they belong in the home blanket.
 
+Commits are signed with the operator's 1Password SSH key. Per-machine signing
+settings live in the untracked `~/.config/git/config.signing`, which
+`.config/git/config` includes; agents never bypass signing. Setup and agent
+rules: zdots `docs/commit-signing.md`.
+
 ## Tracked Files
 
 Root-level home files:

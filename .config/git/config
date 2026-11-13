@@ -33,6 +33,11 @@
 [includeIf "gitdir:~/.config/nvim/"]
 	path = ~/.config/git/config.identity.home
 
+# Machine-local commit signing (untracked; skipped when absent). See zdots
+# docs/commit-signing.md.
+[include]
+	path = ~/.config/git/config.signing
+
 [core]
 	editor = nvim
 	excludesfile = ~/.gitignore_global
