@@ -412,7 +412,6 @@ ensure_zdots_export "PSQLRC"
 # REPL/history redirects: env var is load-bearing; legacy files are
 # stale-not-broken and not policed here.
 ensure_zdots_export "LESSHISTFILE"
-ensure_zdots_export "MYSQL_HISTFILE"
 ensure_zdots_export "NODE_REPL_HISTORY"
 ensure_zdots_export "PSQL_HISTORY"
 ensure_zdots_export "SQLITE_HISTORY"
