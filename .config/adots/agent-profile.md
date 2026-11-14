@@ -23,8 +23,10 @@ adots untracked because of a missing `.git`.
 ## Non-negotiable rules
 - **Sensitive-data-adjacent machine.** Never read `.zdots.secrets`, `.env`, keys,
   or PHI-shaped content into prompts or tool context.
-- **Local AI first.** `ZDOTS_AI_MODE=local`. Use `ai-query` / `zaider` / `zdots-ask`
-  for inference that stays on-box.
+- **Local AI first & Home/Work AI Surface.** `ZDOTS_AI_MODE=local`. Use `zomp` (strictly local), `ai-query`, `zaider`, or `zdots-ask` for inference that stays on-box (`127.0.0.1:11500/v1`).
+  - **Work (`ZDOTS_CONTEXT=work`)**: **Claude Code + Local LLM (`llama.cpp`)** is the immediate primary pair (`zomp` runs `--offline` local-only unless an employer-sanctioned `ZDOTS_WORK_AI_GATEWAY_URL` is set). Consumer cloud lanes (`--hybrid`, `--or`, `omp-gateway-ctl import-keychain`) are hard-blocked.
+  - **Home**: **Oh-My-Pi (`zomp --hybrid`) + `omp-gateway-ctl`** (`127.0.0.1:11509`/`11510`) routes `smol` tasks to local `llama.cpp` ($0) and `default`/`plan`/`slow` across authenticated frontier accounts (Gemini, Codex, Copilot, OpenRouter, HF).
+  - See `~/.config/zsh/OMP.md` and each repo's `docs/agents/ai-surface.md` for per-agent integration requirements.
 - **zdots is coordinated infrastructure.** Make changes only when the operator
   requests them; otherwise file `zdots-issue` and work at the task level.
 - **Schrute Test before every irreversible action.** Would an idiot do that? If yes, stop.
