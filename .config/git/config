@@ -92,3 +92,5 @@
 	date = relative
 [safe]
 	directory = /app
+[alias]
+	whatchanged = log --raw --no-merges
