@@ -201,7 +201,7 @@
         "tmux"
       ],
       "Custom Command": "Yes",
-      "Command": "/bin/zsh -lc 'tmux new-session -A -s main || exec /bin/zsh -l'",
+      "Command": "/bin/zsh -lc 'command -v tx >/dev/null && exec tx --landing; exec tmux new-session -A -s main || exec /bin/zsh -l'",
       "Option Key Sends": 2,
       "Right Option Key Sends": 0,
       "Prompt Before Closing 2": 2,

@@ -183,6 +183,14 @@ Prefix: **`Ctrl-a`** (consistent with Emacs and ergonomic workflows).
 | `prefix + S` | `setw synchronize-panes` | Toggle sync-panes (triggers loud `󰓦 SYNC ⚠️` banner) |
 | `prefix + R` | `source-file .../tmux.conf` | Reload configuration instantly with feedback |
 
+### Sessions
+| Key Binding | Command / Action | Purpose |
+|---|---|---|
+| `prefix + N` | `new-session -d -s <name> -c ... ; switch-client` | New session by name in the current directory, then switch to it (no nesting); same as `tx <name>` |
+| `prefix + s` | `choose-tree -Zs` | Pick a session to switch to; same as `tx` inside tmux |
+| `prefix + ⌫` | `switch-client -l` | Back to the previous session; same as `tx -`. (tmux's default, `prefix + L`, is taken by pane resizing) |
+| `prefix + d` | `detach-client` | Detach; everything keeps running |
+
 ### Plugins (Stateless TPM Suite)
 | Key Binding | Plugin | Purpose |
 |---|---|---|
@@ -229,17 +237,37 @@ would stop meeting.
 
 | Profile | Starts | Use |
 |---|---|---|
-| `zdots (Craftsmanship)` | login shell | everyday shell; plain fallback |
-| `zdots tmux (Craftsmanship)` | `tmux new-session -A -s main` | durable sessions |
+| `zdots (Craftsmanship)` | login shell | a plain local tab, not in tmux (⌘O, or Shell › New Tab with Profile) |
+| `zdots tmux (Craftsmanship)` | `tx --landing` (falls back to `tmux new-session -A -s main`, then a login shell) | default: durable tabs |
 
-**Durability model (stateless by design):**
-* Every tab of the tmux profile attaches the same `main` session (creating it
-  if needed); open more tmux windows inside it (`prefix + c`).
-* Closing the tab, the window or iTerm2 only **detaches** — the session keeps
-  running in the tmux server. Reopen the profile to reattach.
+**Durability model (stateless by design)** — zdots' `tx` (`man tx`) is the one way in:
+
+| You do | You get | Survives an iTerm2 restart? |
+|---|---|---|
+| Open iTerm2 (first window) | Attached to `main` | Yes |
+| ⌘T / ⌘N | A new tmux window in `main`, shown in its own iTerm2 tab through a grouped view | Yes: the window lives in `main` |
+| ⌘D | Same as ⌘T. For a split inside tmux use `prefix + \|` / `prefix + -` | Yes |
+| `tx <name>` or `prefix + N` | Session `<name>` in the current directory (created if needed); inside tmux the client switches instead of nesting | Yes |
+| `tx` or `prefix + s` | Session picker (outside tmux: a list) | — |
+| `tx -` or `prefix + ⌫` | Back to the previous session | — |
+| The plain profile | A local shell outside tmux | No |
+
+* **⌘W vs `exit`**: closing a tab (⌘W), a window or iTerm2 drops only the
+  view; the tmux window keeps running in `main`. Views nobody shows any more
+  (`main-N` in `prefix + s`) are pruned the next time you press ⌘T. `exit`
+  closes the tmux window itself; in a ⌘T tab the view then shows another `main`
+  window, so close the tab with ⌘W.
+* **Visiting another session from a ⌘T tab** (`prefix + N`, `tx <name>`)
+  keeps that tab's view, so `prefix + ⌫` returns to the same window.
+* **After a restart**, the first window lands in `main` with every window still
+  there; reach other sessions with `tx <name>` or `prefix + s`.
+* **Landing session**: `ZDOTS_TMUX_LANDING` (default `main`).
+* **Selecting text**: tmux owns the mouse (`mouse on`; drag-select copies via
+  tmux-yank). Hold **⌥ (Option)** while dragging for iTerm2's own selection.
+* **Ghostty** is the broadcast terminal (OBS) and deliberately opens a plain
+  shell, so live sessions never land on stream. `tx` works there as anywhere.
 * Sessions end at logout or reboot. Nothing is saved to disk: no
   resurrect/continuum, scrollback stays in memory.
-* If tmux cannot start, the profile falls back to a plain login shell.
 
 **Safety:**
 * The server socket lives in `/private/tmp/tmux-$UID` (mode 0700).
@@ -265,13 +293,19 @@ profile's `Command` and `Dynamic Profile Parent Name` (it doesn't round-trip
 inherited profiles), leaving a tmux profile with no command and no theme. If
 that happens, restore the tracked file:
 `adots-git restore -- "Library/Application Support/iTerm2/DynamicProfiles/zdots-craftsmanship.json"`.
+If it happens again after a restore, iTerm2's own preferences still hold
+copies of the profiles marked `Rewritable` (`defaults read com.googlecode.iterm2
+| grep Rewritable`). With iTerm2 quit: `defaults export com.googlecode.iterm2`
+to a file, `PlistBuddy -c 'Delete :"New Bookmarks":<n>:Rewritable'` for each
+zdots profile, `defaults import` it back, then restore the JSON.
 The font comes from the `font-fira-code-nerd-font` cask.
 If iTerm2 shows Menlo, macOS hasn't activated the cask's fonts — install them
 with Font Book (or CoreText user-scope registration).
 
 **Verify:**
 ```bash
-tmux ls                                   # the main session survives closed tabs
+tmux ls                                   # main survives closed tabs; ⌘T views appear as main-N while open
+tx --help                                 # zdots session helper
 tmux show-environment -g TMUX_PLUGIN_MANAGER_PATH
 printf '%s\n' "$TERM" "$TERM_PROGRAM" "$SSH_AUTH_SOCK"   # inside a pane
 defaults read com.googlecode.iterm2 AlwaysAcceptFirstMouse            # 0
