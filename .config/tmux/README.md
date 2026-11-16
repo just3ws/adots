@@ -154,6 +154,12 @@ so Emacs start-of-line works in every shell and prompt inside tmux. (Until
 2026-11-16 the prefix was `Ctrl-a`, changed because it was hard to press
 reliably and collided with start-of-line.)
 
+**New Mac:** macOS ships `Ctrl-Space` as *Select the previous input source*,
+which takes the key before tmux sees it. Turn it off in *System Settings ›
+Keyboard › Keyboard Shortcuts › Input Sources*. Check: `defaults read
+com.apple.symbolichotkeys AppleSymbolicHotKeys | grep -A1 '60 ='` shows
+`enabled = 0`.
+
 ### AI Agent Orchestration & Buffers
 | Key Binding | Command / Action | Purpose |
 |---|---|---|
