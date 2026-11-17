@@ -1,0 +1,14 @@
+# Yazi — terminal file manager (adots: ~/.config/yazi). Launch with `y` (zdots),
+# which also leaves the shell in the directory Yazi was in at quit.
+#
+# Defaults cover the rest: images draw through iTerm2's inline image protocol
+# (tmux passes it through), videos preview a frame via ffmpeg, PDFs via
+# pdftoppm, and Enter opens text in $EDITOR (nvim).
+#
+# Plugins are pinned in package.toml; `ya pkg install` restores them after an
+# adots restore, `ya pkg upgrade` moves the pins.
+
+# Markdown renders through glow instead of showing the raw source.
+[[plugin.prepend_previewers]]
+url = "*.{md,markdown}"
+run = 'piper -- CLICOLOR_FORCE=1 glow -w=$w -s=$t "$1"'

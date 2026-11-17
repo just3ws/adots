@@ -128,6 +128,10 @@ flowchart TB
    * Enables child processes to emit control sequences through tmux to the terminal emulator.
    * `zclaude` interactive sessions use this to encode and pass the active model badge (`\ePtmux;\e\e]1337;SetBadgeFormat=...\a\e\\`) directly to iTerm2.
    * Allows desktop notification codes (`OSC 9` / `OSC 777`) and inline graphic protocols (Kitty, iTerm).
+   * `update-environment TERM` and `TERM_PROGRAM` pass the outer terminal's name into new sessions. Image tools such as yazi read `TERM_PROGRAM` to pick iTerm2's inline image protocol. When it's empty, they fall back to blocky character images.
+   * **After changing these lines:** only the server re-reading its config and sessions created afterwards see the change. Existing panes keep an empty `TERM_PROGRAM`.
+     * Safe first try: reload with prefix + R, open a fresh session with `tx test`, then run `y` there.
+     * Yazi's docs say to restart tmux fully (`tmux kill-server`). That closes every session, `main` included, and stops whatever runs in them. Do it only when nothing important is running.
 
 2. **Extended Keys Protocol (`extended-keys on` & `terminal-features ",*:extkeys"`)**:
    * Implements the CSI u / kitty keyboard protocol.
