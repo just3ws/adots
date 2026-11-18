@@ -26,7 +26,7 @@ The status bar employs the exact round capsule aesthetic (`` `\uE0B6`, `` 
 
 * **Session Capsule** (`#7E9CD8` `crystalBlue` on `#16161D` `sumiInk0`): Identifies the active session.
 * **Dynamic Mode Badges**:
-  * `󰘳 PREFIX` (`#FFA066` `surimiOrange`): Illuminates immediately when the `C-Space` prefix is pending.
+  * `󰘳 PREFIX` (`#FFA066` `surimiOrange`): Illuminates immediately when the `C-b` prefix is pending.
   * `󰆏 COPY` (`#98BB6C` `springGreen`): Visible while traversing buffer history or selecting text in copy mode.
   * `󰓦 SYNC ⚠️` (`#C34043` `autumnRed`): High-visibility warning displayed whenever `synchronize-panes` is toggled ON.
 * **Window Tabs**:
@@ -152,17 +152,11 @@ flowchart TB
 
 ## 4. Keybinding Reference
 
-Prefix: **`Ctrl-Space`**. Press it twice to send one `Ctrl-Space` to the program
-(Neovim's blink.cmp opens its completion menu with it). `Ctrl-a` is not bound,
-so Emacs start-of-line works in every shell and prompt inside tmux. (Until
-2026-11-16 the prefix was `Ctrl-a`, changed because it was hard to press
-reliably and collided with start-of-line.)
-
-**New Mac:** macOS ships `Ctrl-Space` as *Select the previous input source*,
-which takes the key before tmux sees it. Turn it off in *System Settings ›
-Keyboard › Keyboard Shortcuts › Input Sources*. Check: `defaults read
-com.apple.symbolichotkeys AppleSymbolicHotKeys | grep -A1 '60 ='` shows
-`enabled = 0`.
+Prefix: **`Ctrl-b`**, tmux's default. Press it twice to send one `Ctrl-b` to
+the program. `Ctrl-a` and `Ctrl-Space` are not bound, so Emacs start-of-line
+and Neovim's completion key reach the program. History: `Ctrl-a` until
+2026-11-16 (hard to press, took start-of-line), then `Ctrl-Space` until
+2026-11-18, when I went back to `Ctrl-b`: muscle memory isn't worth fighting.
 
 ### AI Agent Orchestration & Buffers
 | Key Binding | Command / Action | Purpose |
