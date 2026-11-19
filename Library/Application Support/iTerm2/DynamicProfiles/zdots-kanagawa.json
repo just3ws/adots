@@ -1,7 +1,7 @@
 {
   "Profiles": [
     {
-      "Name": "zdots (Craftsmanship)",
+      "Name": "zdots (Kanagawa)",
       "Guid": "8303DA53-8C0D-446A-B08C-79C326B7FAAB",
       "Tags": [
         "zdots"
@@ -571,9 +571,9 @@
       }
     },
     {
-      "Name": "zdots tmux (Craftsmanship)",
+      "Name": "zdots tmux (Kanagawa)",
       "Guid": "0CFA39E3-8680-486C-AA70-C025DAE3CFFB",
-      "Dynamic Profile Parent Name": "zdots (Craftsmanship)",
+      "Dynamic Profile Parent Name": "zdots (Kanagawa)",
       "Tags": [
         "zdots",
         "tmux"

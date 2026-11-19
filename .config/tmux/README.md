@@ -242,8 +242,8 @@ Verify zero credentials or sensitive variables exist before committing dotfiles:
 iTerm2 runs **classic tmux** (not `tmux -CC` control mode, which drops the
 status bar, popups and the OSC passthrough this setup relies on). Two Dynamic
 Profiles, tracked at
-`~/Library/Application Support/iTerm2/DynamicProfiles/zdots-craftsmanship.json`,
-derive from the Ghostty theme and config (Craftsmanship palette, FiraCode Nerd
+`~/Library/Application Support/iTerm2/DynamicProfiles/zdots-kanagawa.json`,
+hold the Kanagawa colours, Lotus for light and Wave for dark (FiraCode Nerd
 Font Mono Retina 18, block cursor). Line height stays at 100% with iTerm2's
 built-in Powerline glyphs: unlike Ghostty's `adjust-cell-height`, iTerm2 adds
 extra spacing *between* lines, so prompt/status segments and box-drawing lines
@@ -251,8 +251,8 @@ would stop meeting.
 
 | Profile | Starts | Use |
 |---|---|---|
-| `zdots (Craftsmanship)` | login shell | a plain local tab, not in tmux (⌘O, or Shell › New Tab with Profile) |
-| `zdots tmux (Craftsmanship)` | `tx --landing` (falls back to `tmux new-session -A -s main`, then a login shell) | default: durable tabs |
+| `zdots (Kanagawa)` | login shell | a plain local tab, not in tmux (⌘O, or Shell › New Tab with Profile) |
+| `zdots tmux (Kanagawa)` | `tx --landing` (falls back to `tmux new-session -A -s main`, then a login shell) | default: durable tabs |
 
 **Durability model (stateless by design)** — zdots' `tx` (`man tx`) is the one way in:
 
@@ -293,7 +293,7 @@ would stop meeting.
 
 **Setup** — global iTerm2 settings the profiles can't carry, set once in the UI:
 1. Make durable sessions the default: *Settings › Profiles › zdots tmux
-   (Craftsmanship) › Other Actions… › Set as Default*.
+   (Kanagawa) › Other Actions… › Set as Default*.
 2. Don't hand the window-activating click to the program: *Settings › Advanced*,
    search **first mouse**, and set "always accept first mouse event" to **No**
    (`AlwaysAcceptFirstMouse = false`). With mouse reporting on (tmux `mouse on`,
@@ -306,7 +306,7 @@ choose **Cancel** — never *Mark as Rewritable*: iTerm2's rewrite drops the tmu
 profile's `Command` and `Dynamic Profile Parent Name` (it doesn't round-trip
 inherited profiles), leaving a tmux profile with no command and no theme. If
 that happens, restore the tracked file:
-`adots-git restore -- "Library/Application Support/iTerm2/DynamicProfiles/zdots-craftsmanship.json"`.
+`adots-git restore -- "Library/Application Support/iTerm2/DynamicProfiles/zdots-kanagawa.json"`.
 If it happens again after a restore, iTerm2's own preferences still hold
 copies of the profiles marked `Rewritable` (`defaults read com.googlecode.iterm2
 | grep Rewritable`). With iTerm2 quit: `defaults export com.googlecode.iterm2`

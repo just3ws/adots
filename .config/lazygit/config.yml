@@ -1,24 +1,5 @@
-gui:
-  theme:
-    activeBorderColor:
-      - "#957FB8" # oniViolet
-      - bold
-    inactiveBorderColor:
-      - "#54546D" # sumiInk6
-    optionsTextColor:
-      - "#7AA89F" # waveAqua2
-    selectedLineBgColor:
-      - "#2D4F67" # waveBlue2
-    selectedRangeBgColor:
-      - "#2D4F67" # waveBlue2
-    cherryPickedCommitBgColor:
-      - "#98BB6C" # springGreen
-    cherryPickedCommitFgColor:
-      - "#1A1B2F" # bg (contrast on green)
-    unstagedChangesColor:
-      - "#C34043" # autumnRed
-    defaultFgColor:
-      - "#DCD7BA" # fujiWhite
+# The colour theme is not here: zdots generates one per Kanagawa variant and
+# the shell layers it on through LG_CONFIG_FILE.
 git:
   paging:
     colorArg: always
