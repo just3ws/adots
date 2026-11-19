@@ -63,6 +63,12 @@ Each pane displays an informative top banner, keeping agent context, process nam
 
 ## 2. Kanagawa Wave Palette Reference
 
+The bar reads its colours by name (`#{@crystalBlue}`) from a palette file:
+`kanagawa-wave.conf` on a dark terminal, `kanagawa-lotus.conf` on a light one.
+tmux loads the matching file when the terminal reports its theme
+(`client-light-theme` / `client-dark-theme` hooks). The table below is Wave;
+Lotus keeps the names and takes the light values.
+
 Strict adherence to the canonical palette defined in [`etc/themes/kanagawa-wave.yaml`](file:///Users/mike/.config/zsh/etc/themes/kanagawa-wave.yaml):
 
 | Token | Hex Literal | Swatch | Visual Role & tmux Element |

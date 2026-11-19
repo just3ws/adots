@@ -22,7 +22,7 @@ gui:
 git:
   paging:
     colorArg: always
-    pager: delta --dark --syntax-theme "Kanagawa Wave" --paging=never
+    pager: delta --paging=never
 keybinding:
   universal:
     prevItem: 'k'

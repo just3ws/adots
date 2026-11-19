@@ -60,9 +60,14 @@
 
 [delta]
 	navigate = true
-	light = false
 	line-numbers = true
 	side-by-side = true
+	# Colours come from one of the two features below. The shell names it in
+	# DELTA_FEATURES (+kanagawa-wave or +kanagawa-lotus) to match light or dark.
+	# Without that, delta uses its own defaults for the terminal's background.
+
+[delta "kanagawa-wave"]
+	dark = true
 	syntax-theme = Kanagawa Wave
 	minus-style = syntax "#43242B"
 	minus-emph-style = syntax "#672E30"
@@ -74,6 +79,20 @@
 	file-style = "#7E9CD8" bold
 	hunk-header-style = "#957FB8"
 	hunk-header-decoration-style = "#54546D" box
+
+[delta "kanagawa-lotus"]
+	light = true
+	syntax-theme = Kanagawa Lotus
+	minus-style = syntax "#E6C9A8"
+	minus-emph-style = syntax "#D9A594"
+	plus-style = syntax "#D5DEB5"
+	plus-emph-style = syntax "#B7D0AE"
+	line-numbers-minus-style = "#D7474B"
+	line-numbers-plus-style = "#6E915F"
+	line-numbers-zero-style = "#A09CAC"
+	file-style = "#4D699B" bold
+	hunk-header-style = "#624C83"
+	hunk-header-decoration-style = "#A09CAC" box
 
 [interactive]
 	diffFilter = delta --color-only

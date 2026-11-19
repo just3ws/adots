@@ -1,5 +1,8 @@
 # bat configuration
---theme="Kanagawa Wave"
+# Follows the terminal: Lotus on a light background, Wave on a dark one.
+--theme=auto
+--theme-dark="Kanagawa Wave"
+--theme-light="Kanagawa Lotus"
 --italic-text=always
 --style="numbers,changes,header"
 --map-syntax "*.jenkinsfile:Groovy"
