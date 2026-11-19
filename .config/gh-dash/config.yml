@@ -84,17 +84,6 @@ theme:
         table:
             showSeparator: true
             compact: false
-    colors:
-        text:
-            primary: "#DCD7BA"
-            secondary: "#7AA89F"
-            inverted: "#1A1B2F"
-            faint: "#54546D"
-            warning: "#FFA066"
-            error: "#E82424"
-            success: "#98BB6C"
-        background:
-            selected: "#2D4F67"
 pager:
     diff: ""
 confirmQuit: false

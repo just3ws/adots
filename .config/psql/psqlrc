@@ -26,8 +26,9 @@
 \set COMP_KEYWORD_CASE upper
 
 -- 2. Prompt: [user@host:db] [txn_status] >
--- Color codes are the project palette; do not name the theme here.
-\set PROMPT1 '%[%033[38;5;141m%]%n%[%033[0m%]@%[%033[38;5;117m%]%m%[%033[0m%]:%[%033[38;5;81m%]%/ %[%033[38;5;210m%]%x%[%033[0m%]%# '
+-- Colours are the terminal's own (magenta, blue, cyan, red), so the prompt
+-- follows whichever palette the terminal is using, light or dark.
+\set PROMPT1 '%[%033[35m%]%n%[%033[0m%]@%[%033[34m%]%m%[%033[0m%]:%[%033[36m%]%/ %[%033[31m%]%x%[%033[0m%]%# '
 \set PROMPT2 '  %R > '
 
 -- 3. Development shortcuts
