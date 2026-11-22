@@ -18,11 +18,11 @@
       "Scrollback Lines": 100000,
       "TerminalMargin": 16,
       "TerminalVMargin": 14,
-      "Load Shell Integration Automatically": false,
+      "Load Shell Integration Automatically": true,
       "Use Separate Colors for Light and Dark Mode": true,
       "Terminal Type": "xterm-256color",
       "Custom Command": "No",
-      "Custom Directory": "No",
+      "Custom Directory": "Recycle",
       "Background Color": {
         "Color Space": "sRGB",
         "Alpha Component": 1.0,
@@ -568,7 +568,11 @@
         "Blue Component": 0.823529,
         "Green Component": 0.796078,
         "Red Component": 0.709804
-      }
+      },
+      "Option Key Sends": 2,
+      "Right Option Key Sends": 2,
+      "Unlimited Scrollback": true,
+      "Visual Bell": true
     },
     {
       "Name": "zdots tmux (Kanagawa)",
@@ -580,8 +584,6 @@
       ],
       "Custom Command": "Yes",
       "Command": "/bin/zsh -lc 'command -v tx >/dev/null && exec tx --landing; exec tmux new-session -A -s main || exec /bin/zsh -l'",
-      "Option Key Sends": 2,
-      "Right Option Key Sends": 0,
       "Prompt Before Closing 2": 2,
       "Jobs to Ignore": [
         "rlogin",
