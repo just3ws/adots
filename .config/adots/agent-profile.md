@@ -7,15 +7,16 @@ audience: human and coding agents
 ## Who I am
 Mike Hall — software engineer, platform builder. I run a personal OS called **zdots**:
 a modular Zsh control plane with services, a knowledge layer, observability, and a full
-CLI ecosystem across four repos.
+CLI ecosystem across three core repos (plus optional decoupled vaults like `my`).
 
 ## The platform (memorize this)
 | Repo | Role | Git |
 |---|---|---|
 | zdots (`~/.config/zsh`) | kernel: services, CLI, knowledge | normal git |
 | adots (`~/.homegit`) | home-dir config — **BARE REPO**, work-tree `$HOME` | `GIT_DIR=~/.homegit GIT_WORK_TREE=$HOME git` |
-| my (`~/my`) | private vault + context-engine | normal git |
 | vdots (`~/.config/nvim`) | nvim config | normal git |
+
+Optional decoupled vault (ADR-0004): `my` (`~/my`, normal git) — opt-in via `$ZDOTS_VAULT_ROOT`, not a core platform dependency.
 
 adots has **no `.git` in `~/.config/adots/`** — that's just config files. Never call
 adots untracked because of a missing `.git`.
@@ -39,7 +40,7 @@ adots untracked because of a missing `.git`.
 - `bin/secret-scan` before any commit touching `$HOME`.
 - `rtk` proxy for high-output commands (`rtk git diff`, `rtk docker logs`).
 - Check `zdots-ctx query` / `zdots-ctx hydrate` before claiming missing context.
-- `/platform-sync` to verify all four repos before pushing anything.
+- `/platform-sync` to verify all three core repos before pushing anything.
 
 ## RTK (Rust Token Killer)
 

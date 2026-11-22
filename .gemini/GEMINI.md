@@ -2,7 +2,7 @@
 
 This file is read as global rules by both Gemini CLI and Antigravity (`~/.gemini/GEMINI.md`, applied across all Antigravity workspaces per antigravity.google/docs/rules-workflows).
 
-Mike runs a personal OS ("zdots") across four repos: zdots (`~/.config/zsh`), adots (`~/.homegit`, bare repo, work-tree `$HOME`), my (`~/my`), vdots (`~/.config/nvim`). Full profile and working-style rules: `~/.config/adots/claude-profile.md`.
+Mike runs a personal OS ("zdots") across three core repos: zdots (`~/.config/zsh`), adots (`~/.homegit`, bare repo, work-tree `$HOME`), and vdots (`~/.config/nvim`); `my` (`~/my`) is an optional, decoupled private vault (ADR-0004). Full profile and working-style rules: `~/.config/adots/agent-profile.md`.
 
 ## Non-negotiable
 

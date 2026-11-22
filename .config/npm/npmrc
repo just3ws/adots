@@ -1,1 +1,1 @@
-allow-scripts=@anthropic-ai/claude-code,@google/genai,protobufjs
+allow-scripts=@google/genai,protobufjs

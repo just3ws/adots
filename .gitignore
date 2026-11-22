@@ -11,3 +11,6 @@
 .config/git/config.identity
 .config/git/config.signing
 .config/git/allowed_signers
+
+# Machine identity pointer (Z-277) — per-host profile name (e.g. powerstation, work).
+.config/adots/profile
